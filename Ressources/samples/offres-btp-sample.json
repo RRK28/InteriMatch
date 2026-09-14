@@ -1,0 +1,237 @@
+{
+  "requete": {
+    "motsCles": "BTP"
+  },
+  "nb": 10,
+  "resultats": [
+    {
+      "id": "213TGJN",
+      "intitule": "Electricien Bâtiment Travaux Publics (F/H)",
+      "description": "Mission longue ou courte durée selon profil\n\nNe laissez pas votre carrière en chantier : votre Agence Adéquat recrute pour un chantier sur BELLEVAUX un Electricien (H/F)\n\nActivité économique essentielle, le secteur du BTP emploie de nombreux métiers et permet de belles opportunit",
+      "dateCreation": "2026-09-11T14:52:42.774Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 3 Mois",
+      "lieuTravail": {
+        "libelle": "74 - Annemasse",
+        "codePostal": "74100",
+        "commune": "74012"
+      },
+      "romeCode": "F1605",
+      "romeLibelle": "Monteur / Monteuse de réseaux électriques",
+      "salaire": {
+        "libelle": "Mensuel de 1867.02 Euros à 2250.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TFVW",
+      "intitule": "Electricien Bâtiment Travaux Publics (F/H)",
+      "description": "Mission longue ou courte durée selon profil Possibilité de CDII\n\nNe laissez pas votre carrière en chantier : votre Agence Adéquat Bressols recrute sur des postes d'électricien bâtiment et d'électricien TP (F/H).\n\nActivité économique essentielle, le secteur du BTP emploie de nombr",
+      "dateCreation": "2026-09-11T14:44:33.780Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 6 Mois",
+      "lieuTravail": {
+        "libelle": "82 - Montauban",
+        "codePostal": "82000",
+        "commune": "82121"
+      },
+      "romeCode": "F1602",
+      "romeLibelle": "Electricien / Electricienne du bâtiment",
+      "salaire": {
+        "libelle": "Mensuel de 1867.02 Euros à 2250.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TFPH",
+      "intitule": "Technico-commercial itinérant BTP (H/F)",
+      "description": "\n                Nous recherchons pour le compte de notre client, acteur spécialisé dans la location de matériel TP-BTP, un(e) Technico-Commercial(e) Itinérant(e) en CDI.\n\nVous êtes un profil terrain, animé par le développement commercial, la prospection et la relation client ? C",
+      "dateCreation": "2026-09-11T14:40:14.303Z",
+      "typeContrat": "CDI",
+      "typeContratLibelle": "CDI",
+      "lieuTravail": {
+        "libelle": "69 - Meyzieu",
+        "codePostal": "69330",
+        "commune": "69282"
+      },
+      "romeCode": "D1407",
+      "romeLibelle": "Technico-commercial / Technico-commerciale",
+      "salaire": {
+        "libelle": "Annuel de 32000.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TDQH",
+      "intitule": "Manœuvre du Bâtiment et des Travaux Publics",
+      "description": "Le manœuvre intervient en soutien des ouvriers qualifiés sur les chantiers ou dans les ateliers. Il réalise des tâches simples mais essentielles pour assurer le bon déroulement des travaux, dans le respect des consignes de sécurité.\n\nRattaché(e) au Chef de chantier, vos missions ",
+      "dateCreation": "2026-09-11T14:20:32.933Z",
+      "typeContrat": "CDI",
+      "typeContratLibelle": "CDI",
+      "lieuTravail": {
+        "libelle": "91 - LONGPONT SUR ORGE",
+        "codePostal": "91310",
+        "commune": "91347"
+      },
+      "romeCode": "F1704",
+      "romeLibelle": "Manœuvre du Bâtiment et des Travaux Publics",
+      "salaire": {
+        "commentaire": "2133.73 brut /mensuel -  négociable selon expérience"
+      },
+      "competences": [
+        {
+          "libelle": "Déblayer, remblayer un terrain"
+        },
+        {
+          "libelle": "Charger, décharger, manutentionner des produits"
+        }
+      ]
+    },
+    {
+      "id": "213TCXY",
+      "intitule": "Electricien BTP (H/F)",
+      "description": "Manpower BAYONNE BTP TRANSPORT recherche pour son client, un acteur du secteur du BTP, un Electricien TP (H/F) spécialisé dans les travaux publics,pour intervenir sur différents chantiers situés dans le secteur du pays Basque et Landes\nSous la responsabilité du chef de chantier, ",
+      "dateCreation": "2026-09-11T14:07:44.512Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 1 Mois",
+      "lieuTravail": {
+        "libelle": "64 - Hasparren",
+        "codePostal": "64240",
+        "commune": "64256"
+      },
+      "romeCode": "F1602",
+      "romeLibelle": "Electricien / Electricienne du bâtiment",
+      "salaire": {
+        "libelle": "Horaire de 12.77 Euros à 14.5 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TCFV",
+      "intitule": "Technicien / Technicienne d'études BTP en génie climatique et éne (H/F)",
+      "description": "Le chargé de projets prend en charge les aspects suivants :\nPiloter et coordonner des projets énergétiques, de l'audit initial à la mise en service, en assurant le suivi technique et la satisfaction client\n\nACTIVITES PRINCIPALES\nEtudes et audits :\nRéaliser les diagnostics des sit",
+      "dateCreation": "2026-09-11T13:53:35.240Z",
+      "typeContrat": "CDI",
+      "typeContratLibelle": "CDI",
+      "lieuTravail": {
+        "libelle": "34 - PEROLS",
+        "codePostal": "34470",
+        "commune": "34198"
+      },
+      "romeCode": "F1120",
+      "romeLibelle": "Economiste de la construction",
+      "salaire": {
+        "libelle": "Annuel de 26000.0 Euros"
+      },
+      "competences": [
+        {
+          "libelle": "Chiffrage et calcul de coût"
+        },
+        {
+          "libelle": "Comprendre, interpréter des données et documents techniques"
+        }
+      ]
+    },
+    {
+      "id": "213TBSZ",
+      "intitule": "Chauffeur PL/SPL BTP H/F",
+      "description": "Missions :\n- Assurer la conduite de camions 4x2 et de semi-remorques équipées de plateaux 2 ou 3 lignes, dans le cadre de transports régionaux et/ou nationaux.\n- Transporter les contrepoids, mini-grues et autres matériels de levage nécessaires aux différents chantiers.\n- Accompag",
+      "dateCreation": "2026-09-11T13:33:49.443Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 18 Mois",
+      "lieuTravail": {
+        "libelle": "68 - Mulhouse",
+        "codePostal": "68100",
+        "commune": "68224"
+      },
+      "romeCode": "N4101",
+      "romeLibelle": "Conducteur / Conductrice de poids lourd",
+      "salaire": {
+        "libelle": "Horaire de 12.31 Euros à 13.0 Euros"
+      },
+      "competences": [
+        {
+          "libelle": "Contrôler l'état de fonctionnement du véhicule"
+        },
+        {
+          "libelle": "Vérifier l'exactitude et la conformité de documents de transport de marchandises"
+        }
+      ]
+    },
+    {
+      "id": "213TBLM",
+      "intitule": "Ouvrier du BTP (h/f) (H/F)",
+      "description": "Adecco recherche pour une société située à la Guerche de Bretagne, des opérateurs de préfabrication béton (H/F) pour du long terme.Missions : En tant qu'opérateur de préfabrication béton, vous serez amené à réaliser les tâches suivantes :\n\n - Nettoyage et huilage des bancs de cou",
+      "dateCreation": "2026-09-11T13:18:04.423Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 6 Mois",
+      "lieuTravail": {
+        "libelle": "35 - Guerche-de-Bretagne",
+        "codePostal": "35130",
+        "commune": "35125"
+      },
+      "romeCode": "F1704",
+      "romeLibelle": "Manœuvre du Bâtiment et des Travaux Publics",
+      "salaire": {
+        "libelle": "Horaire de 12.31 Euros à 12.4 Euros"
+      },
+      "competences": [
+        {
+          "libelle": "Déblayer, remblayer un terrain"
+        },
+        {
+          "libelle": "Charger, décharger, manutentionner des produits"
+        }
+      ]
+    },
+    {
+      "id": "213TBDP",
+      "intitule": "Technicien(ne) chantier et labo BTP (H/F)",
+      "description": "Nous recherchons un(e) Technicien(ne) BTP pour rejoindre notre équipe en Guyane.\nVos missions principales :\n- Réalisation de prélèvements et reconnaissances géotechniques sur le terrain : essais pénétrométriques, sondages à la tarière, essais d'infiltration de type Porchet...\n- C",
+      "dateCreation": "2026-09-11T13:09:18.309Z",
+      "typeContrat": "CDI",
+      "typeContratLibelle": "CDI",
+      "lieuTravail": {
+        "libelle": "973 - Remire-Montjoly",
+        "codePostal": "97354",
+        "commune": "97309"
+      },
+      "romeCode": "F1202",
+      "romeLibelle": "Chef / Cheffe de chantier bâtiment",
+      "salaire": {
+        "commentaire": "Fonction des compétences et de l'expérience"
+      },
+      "competences": [
+        {
+          "libelle": "Permis BE serait un plus"
+        }
+      ]
+    },
+    {
+      "id": "213SZYM",
+      "intitule": "Métreur / Métreuse du BTP",
+      "description": "Le Métreur en Bâtiment est un professionnel clé dans la phase de préparation des projets de construction.\n\nSes principales missions sont :\nAnalyse des Plans et Documents Techniques :\nLecture et interprétation des plans, des notices descriptives, et des documents techniques.\nCompr",
+      "dateCreation": "2026-09-11T12:58:38.706Z",
+      "typeContrat": "CDI",
+      "typeContratLibelle": "CDI",
+      "lieuTravail": {
+        "libelle": "77 - USSY-SUR-MARNE",
+        "codePostal": "77260",
+        "commune": "77478"
+      },
+      "romeCode": "F1108",
+      "romeLibelle": "Métreur / Métreuse de la construction",
+      "salaire": {
+        "commentaire": "Salaire Selon profil et expériences"
+      },
+      "competences": [
+        {
+          "libelle": "Chiffrage et calcul de coût"
+        },
+        {
+          "libelle": "Comprendre, interpréter des données et documents techniques"
+        }
+      ]
+    }
+  ]
+}

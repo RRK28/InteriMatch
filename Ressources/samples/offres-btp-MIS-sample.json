@@ -1,0 +1,252 @@
+{
+  "requete": {
+    "motsCles": "maçon",
+    "typeContrat": "MIS"
+  },
+  "nb": 10,
+  "resultats": [
+    {
+      "id": "213TGSP",
+      "intitule": "MACON COFFREUR BANCHEUR (H/F)",
+      "description": "Triangle Intérim est une agence de travail temporaire spécialisée dans le recrutement et la gestion des ressources humaines. Nous nous engageons à connecter des professionnels talentueux avec des opportunités d'emploi temporaires qui correspondent à leurs compétences et aspiratio",
+      "dateCreation": "2026-09-11T14:58:15.977Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 6 Mois",
+      "lieuTravail": {
+        "libelle": "74 - Annemasse",
+        "codePostal": "74100",
+        "commune": "74012"
+      },
+      "romeCode": "F1701",
+      "romeLibelle": "Coffreur / Coffreuse",
+      "salaire": {
+        "libelle": "Mensuel de 2200.0 Euros à 2900.0 Euros",
+        "complement1": "Indemnité transports",
+        "complement2": "Primes",
+        "listeComplements": [
+          {
+            "code": "14",
+            "libelle": "Indemnité transports"
+          },
+          {
+            "code": "1",
+            "libelle": "Primes"
+          }
+        ]
+      },
+      "competences": [
+        {
+          "libelle": "Décoffrer des ouvrages en béton"
+        },
+        {
+          "libelle": "Niveler un fond de fouilles, une tranchée ou un radier"
+        }
+      ]
+    },
+    {
+      "id": "213TGNX",
+      "intitule": "MACON TRADITIONNEL (H/F)",
+      "description": "Dans le cadre du développement de son activité, nous recherchons pour notre client, spécialisé dans le bâtiment et les travaux publics, un maçon traditionnel à Grenoble (38000)\n\nAu quotidien, vous serez amené(e) à :\n\nPréparer et poser les fondations, murs et structures en pierre,",
+      "dateCreation": "2026-09-11T14:55:17.378Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 1 Mois",
+      "lieuTravail": {
+        "libelle": "38 - Grenoble",
+        "codePostal": "38000",
+        "commune": "38185"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "libelle": "Horaire de 12.31 Euros à 15.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TGMQ",
+      "intitule": "Maçon (H/F)",
+      "description": "Ne laissez pas votre carrière en chantier : Votre Agence Adéquat Sablé sur Sarthe recrute des futurs Maçons (H/F).\n\nMissions taillées sur mesure :\n\n- Réaliser les fondations, chapes, dalles, planchers et ouvertures, selon les plans de construction.\n- Fabriquer et poser des coffra",
+      "dateCreation": "2026-09-11T14:54:29.387Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 3 Mois",
+      "lieuTravail": {
+        "libelle": "72 - Sablé-sur-Sarthe",
+        "codePostal": "72300",
+        "commune": "72264"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "libelle": "Mensuel de 1867.02 Euros à 2250.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TFZZ",
+      "intitule": "MACON TRADITIONNEL H/F",
+      "description": "Notre agence Adéquat Avignon recrute un ou une Maçon Traditionnel F/H pour une mission intérim située à Avignon pour un client spécialisé en BTP.\n\nVos futures missions :\n\n * Réaliser des travaux de maçonnerie traditionnelle (murs, cloisons, dalles, etc.)\n * Préparer et appliquer ",
+      "dateCreation": "2026-09-11T14:47:16.380Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 12 Mois",
+      "lieuTravail": {
+        "libelle": "84 - Avignon",
+        "codePostal": "84000",
+        "commune": "84007"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "libelle": "Mensuel de 1867.02 Euros à 2250.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TFWW",
+      "intitule": "Maçon coffreur H/F",
+      "description": "Dans le cadre du développement de son activité, nous recherchons pour notre client, spécialisé dans le bâtiment,un maçon coffreur (H/F)à Carroz d'araches. \nLes missions:\n- Réaliser des ouvrages en béton armé à l'aide de coffrages traditionnels ou banches\n- Installer les coffrages",
+      "dateCreation": "2026-09-11T14:45:12.718Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 3 Mois",
+      "lieuTravail": {
+        "libelle": "38 - Rives",
+        "codePostal": "38140",
+        "commune": "38337"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "libelle": "Horaire de 12.31 Euros à 16.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TFQT",
+      "intitule": "Maçon / Maçonne (H/F)",
+      "description": "Nous sommes à la recherche d'un Maçon dynamique et passionné pour rejoindre notre équipe de construction ! Si vous avez un peu d'expérience dans le domaine et que vous aimez voir le fruit de votre travail, cette offre est faite pour vous.\n\nMissions : \n- Réalisation de murs, fonda",
+      "dateCreation": "2026-09-11T14:41:35.170Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 9 Mois",
+      "lieuTravail": {
+        "libelle": "64 - BAYONNE",
+        "codePostal": "64100",
+        "commune": "64102"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "commentaire": "SELON GRILLE DU BTP",
+        "complement1": "Primes",
+        "complement2": "Indemnité transports",
+        "listeComplements": [
+          {
+            "code": "1",
+            "libelle": "Primes"
+          },
+          {
+            "code": "14",
+            "libelle": "Indemnité transports"
+          },
+          {
+            "code": "6",
+            "libelle": "Titres restaurant / Prime de panier"
+          }
+        ]
+      },
+      "competences": [
+        {
+          "libelle": "Appliquer les mortiers"
+        },
+        {
+          "libelle": "Monter les murs en utilisant les matériaux adaptés"
+        },
+        {
+          "libelle": "Réaliser des enduits"
+        }
+      ]
+    },
+    {
+      "id": "213TFDV",
+      "intitule": "maçon traditionnel (H/F)",
+      "description": "Dans le cadre du développement de son activité, nous recherchons pour notre client, spécialisé dans le bâtiment et la construction, un maçon traditionnel pour une mission en intérim de 6 mois à Yvetot (76190).- Effectuer des travaux de maçonnerie traditionnelle\n- Réaliser des fon",
+      "dateCreation": "2026-09-11T14:31:49.761Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 6 Mois",
+      "lieuTravail": {
+        "libelle": "76 - Yvetot",
+        "codePostal": "76190",
+        "commune": "76758"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "libelle": "Horaire de 13.0 Euros à 15.0 Euros"
+      },
+      "competences": []
+    },
+    {
+      "id": "213TDVY",
+      "intitule": "Aide-maçon / Aide-maçonne (H/F)",
+      "description": "Nous recrutons pour l'un de nos clients un(e) Aide-Maçon(ne) Bâtiment.\n\nVos missions :\n- Aide à la réalisation de travaux de maçonnerie générale (fondations, coffrage, coulage de béton, montage de murs, etc.)\n- Préparation et nettoyage des chantiers\n- Transport du matériel et des",
+      "dateCreation": "2026-09-11T14:24:42.893Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 2 Mois",
+      "lieuTravail": {
+        "libelle": "73 - Albertville",
+        "codePostal": "73200",
+        "commune": "73011"
+      },
+      "romeCode": "F1704",
+      "romeLibelle": "Manœuvre du Bâtiment et des Travaux Publics",
+      "salaire": {
+        "commentaire": "Selon formation et expérience"
+      },
+      "competences": [
+        {
+          "libelle": "Charger, décharger, manutentionner des produits"
+        }
+      ]
+    },
+    {
+      "id": "213TDQG",
+      "intitule": "Aide-maçon / Aide-maçonne (H/F)",
+      "description": "Nous recrutons pour l'un de nos clients un(e) Aide-Maçon(ne) Bâtiment.\n\nVos missions :\n- Aide à la réalisation de travaux de maçonnerie générale (fondations, coffrage, coulage de béton, montage de murs, etc.)\n- Préparation et nettoyage des chantiers\n- Transport du matériel et des",
+      "dateCreation": "2026-09-11T14:20:30.902Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 2 Mois",
+      "lieuTravail": {
+        "libelle": "73 - Chambéry",
+        "codePostal": "73000",
+        "commune": "73065"
+      },
+      "romeCode": "F1704",
+      "romeLibelle": "Manœuvre du Bâtiment et des Travaux Publics",
+      "salaire": {
+        "commentaire": "Selon formation et expérience"
+      },
+      "competences": [
+        {
+          "libelle": "Charger, décharger, manutentionner des produits"
+        }
+      ]
+    },
+    {
+      "id": "213TDKX",
+      "intitule": "Maçon voirie, réseaux divers -vrd (H/F)",
+      "description": "Partnaire Beauvais recherche pour son client un Maçon (H/F) basé à Saint Leu d'Esserent (60).\nA quoi ressemble votre future entreprise?  C'est une entreprise de travaux publics spécialisée dans les travaux routiers et voiries, l'aménagement urbain, l'entretien, l'assainissement, ",
+      "dateCreation": "2026-09-11T14:16:39.561Z",
+      "typeContrat": "MIS",
+      "typeContratLibelle": "Intérim - 1 Mois",
+      "lieuTravail": {
+        "libelle": "60 - Saint-Leu-d'Esserent",
+        "codePostal": "60340",
+        "commune": "60584"
+      },
+      "romeCode": "F1703",
+      "romeLibelle": "Maçon / Maçonne",
+      "salaire": {
+        "libelle": "Horaire de 12.31 Euros à 13.0 Euros"
+      },
+      "competences": []
+    }
+  ]
+}
