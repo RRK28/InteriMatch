@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ENTREPRISE
+  INTERIMAIRE
+}
+
+enum MissionStatus {
+  OUVERTE
+  POURVUE
+  TERMINEE
+  ANNULEE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // RGPD
+  consentRgpd  Boolean  @default(false)
+  consentAt    DateTime?
+
+  entreprise   EntrepriseProfile?
+  interim      InterimProfile?
+  missions     Mission[]          @relation("EntrepriseMissions")
+  candidatures Candidature[]
+}
+
+model EntrepriseProfile {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  raisonSociale String
+  siret       String?
+  ville       String?
+  codePostal  String?
+  description String?
+  // champs sensibles chiffrés (iban)
+  ibanEnc     String?
+}
+
+model InterimProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prenom        String
+  nom           String
+  telephone     String?
+  ville         String?
+  codePostal    String?
+  rayonKm       Int      @default(30)
+  metiers       String[] // ex: macon, coffreur
+  competences   String[]
+  dispoDebut    DateTime?
+  dispoFin      DateTime?
+  experienceAns Int      @default(0)
+  // docs identité chiffrés (juste un hash/ref pour le POC)
+  pieceIdentiteEnc String?
+}
+
+model Mission {
+  id              String        @id @default(cuid())
+  entrepriseId    String
+  entreprise      User          @relation("EntrepriseMissions", fields: [entrepriseId], references: [id], onDelete: Cascade)
+  titre           String
+  description     String
+  metier          String
+  competences     String[]
+  ville           String
+  codePostal      String
+  dateDebut       DateTime
+  dateFin         DateTime
+  remuneration    Float // €/h
+  status          MissionStatus @default(OUVERTE)
+  epiObligatoires String[] // casque, chaussures...
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  candidatures    Candidature[]
+}
+
+model Candidature {
+  id          String   @id @default(cuid())
+  missionId   String
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  interimId   String
+  interim     User     @relation(fields: [interimId], references: [id], onDelete: Cascade)
+  score       Float
+  message     String?
+  status      String   @default("EN_ATTENTE") // EN_ATTENTE | ACCEPTEE | REFUSEE
+  createdAt   DateTime @default(now())
+
+  @@unique([missionId, interimId])
+}
+
+// tendances issues du nettoyage FT (alimentées par la CLI)
+model TendanceMetier {
+  id        String   @id @default(cuid())
+  metier    String
+  zone      String
+  nbOffres  Int
+  salaireMed Float?
+  updatedAt DateTime @updatedAt
+
+  @@unique([metier, zone])
+}
