@@ -1,0 +1,50 @@
+[
+  {
+    "metier": "macon",
+    "zone": "38",
+    "nbOffres": 2,
+    "salaireMed": 13.91
+  },
+  {
+    "metier": "macon",
+    "zone": "73",
+    "nbOffres": 2,
+    "salaireMed": null
+  },
+  {
+    "metier": "macon",
+    "zone": "74",
+    "nbOffres": 1,
+    "salaireMed": 2550
+  },
+  {
+    "metier": "macon",
+    "zone": "72",
+    "nbOffres": 1,
+    "salaireMed": 2058.51
+  },
+  {
+    "metier": "macon",
+    "zone": "84",
+    "nbOffres": 1,
+    "salaireMed": 2058.51
+  },
+  {
+    "metier": "macon",
+    "zone": "64",
+    "nbOffres": 1,
+    "salaireMed": null
+  },
+  {
+    "metier": "macon",
+    "zone": "76",
+    "nbOffres": 1,
+    "salaireMed": 14
+  },
+  {
+    "metier": "macon",
+    "zone": "60",
+    "nbOffres": 1,
+    "salaireMed": 12.66
+  }
+]

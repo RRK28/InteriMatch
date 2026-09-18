@@ -1,0 +1,143 @@
+[
+  {
+    "id": "213TGSP",
+    "titre": "MACON COFFREUR BANCHEUR (H/F)",
+    "titreNorm": "macon coffreur bancheur",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "74 - Annemasse",
+    "codePostal": "74100",
+    "zone": "74",
+    "salaireEstime": 2550,
+    "competences": [
+      "Décoffrer des ouvrages en béton",
+      "Niveler un fond de fouilles, une tranchée ou un radier"
+    ],
+    "dateCreation": "2026-09-11T14:58:15.977Z"
+  },
+  {
+    "id": "213TGNX",
+    "titre": "MACON TRADITIONNEL (H/F)",
+    "titreNorm": "macon traditionnel",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "38 - Grenoble",
+    "codePostal": "38000",
+    "zone": "38",
+    "salaireEstime": 13.655000000000001,
+    "competences": [],
+    "dateCreation": "2026-09-11T14:55:17.378Z"
+  },
+  {
+    "id": "213TGMQ",
+    "titre": "Maçon (H/F)",
+    "titreNorm": "macon",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "72 - Sablé-sur-Sarthe",
+    "codePostal": "72300",
+    "zone": "72",
+    "salaireEstime": 2058.51,
+    "competences": [],
+    "dateCreation": "2026-09-11T14:54:29.387Z"
+  },
+  {
+    "id": "213TFZZ",
+    "titre": "MACON TRADITIONNEL H/F",
+    "titreNorm": "macon traditionnel h f",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "84 - Avignon",
+    "codePostal": "84000",
+    "zone": "84",
+    "salaireEstime": 2058.51,
+    "competences": [],
+    "dateCreation": "2026-09-11T14:47:16.380Z"
+  },
+  {
+    "id": "213TFWW",
+    "titre": "Maçon coffreur H/F",
+    "titreNorm": "macon coffreur h f",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "38 - Rives",
+    "codePostal": "38140",
+    "zone": "38",
+    "salaireEstime": 14.155000000000001,
+    "competences": [],
+    "dateCreation": "2026-09-11T14:45:12.718Z"
+  },
+  {
+    "id": "213TFQT",
+    "titre": "Maçon / Maçonne (H/F)",
+    "titreNorm": "macon maconne",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "64 - BAYONNE",
+    "codePostal": "64100",
+    "zone": "64",
+    "salaireEstime": null,
+    "competences": [
+      "Appliquer les mortiers",
+      "Monter les murs en utilisant les matériaux adaptés",
+      "Réaliser des enduits"
+    ],
+    "dateCreation": "2026-09-11T14:41:35.170Z"
+  },
+  {
+    "id": "213TFDV",
+    "titre": "maçon traditionnel (H/F)",
+    "titreNorm": "macon traditionnel",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "76 - Yvetot",
+    "codePostal": "76190",
+    "zone": "76",
+    "salaireEstime": 14,
+    "competences": [],
+    "dateCreation": "2026-09-11T14:31:49.761Z"
+  },
+  {
+    "id": "213TDVY",
+    "titre": "Aide-maçon / Aide-maçonne (H/F)",
+    "titreNorm": "aide macon aide maconne",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "73 - Albertville",
+    "codePostal": "73200",
+    "zone": "73",
+    "salaireEstime": null,
+    "competences": [
+      "Charger, décharger, manutentionner des produits"
+    ],
+    "dateCreation": "2026-09-11T14:24:42.893Z"
+  },
+  {
+    "id": "213TDQG",
+    "titre": "Aide-maçon / Aide-maçonne (H/F)",
+    "titreNorm": "aide macon aide maconne",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "73 - Chambéry",
+    "codePostal": "73000",
+    "zone": "73",
+    "salaireEstime": null,
+    "competences": [
+      "Charger, décharger, manutentionner des produits"
+    ],
+    "dateCreation": "2026-09-11T14:20:30.902Z"
+  },
+  {
+    "id": "213TDKX",
+    "titre": "Maçon voirie, réseaux divers -vrd (H/F)",
+    "titreNorm": "macon voirie reseaux divers vrd",
+    "metier": "macon",
+    "typeContrat": "MIS",
+    "ville": "60 - Saint-Leu-d'Esserent",
+    "codePostal": "60340",
+    "zone": "60",
+    "salaireEstime": 12.655000000000001,
+    "competences": [],
+    "dateCreation": "2026-09-11T14:16:39.561Z"
+  }
+]
