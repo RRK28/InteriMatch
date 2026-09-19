@@ -1,0 +1,92 @@
+{
+  "name": "InteriMatch — notification match / candidature",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "interimatch-notify",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "wh1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.type}}",
+              "operation": "equals",
+              "value2": "high_match"
+            }
+          ]
+        }
+      },
+      "id": "if1",
+      "name": "IF high match",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "api-key", "value": "BREVO_API_KEY" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"noreply@interimatch.local\" },\n  \"to\": [{ \"email\": \"{{$json.body.matches[0].email}}\" }],\n  \"subject\": \"Nouveau match > 80% — {{$json.body.mission}}\",\n  \"htmlContent\": \"<p>Une mission correspond à ton profil (score élevé).</p>\"\n}"
+      },
+      "id": "brevo1",
+      "name": "Brevo mail match",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [720, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "api-key", "value": "BREVO_API_KEY" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"noreply@interimatch.local\" },\n  \"to\": [{ \"email\": \"{{$json.body.email}}\" }],\n  \"subject\": \"Candidature reçue — {{$json.body.mission}}\",\n  \"htmlContent\": \"<p>Ta candidature a bien été enregistrée (score {{$json.body.score}}).</p>\"\n}"
+      },
+      "id": "brevo2",
+      "name": "Brevo conf candidature",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [720, 400]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "IF high match", "type": "main", "index": 0 }]]
+    },
+    "IF high match": {
+      "main": [
+        [{ "node": "Brevo mail match", "type": "main", "index": 0 }],
+        [{ "node": "Brevo conf candidature", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}

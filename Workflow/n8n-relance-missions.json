@@ -1,0 +1,57 @@
+{
+  "name": "InteriMatch — relance missions ouvertes",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 24 }]
+        }
+      },
+      "id": "cron1",
+      "name": "Tous les jours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:4000/api/webhooks/relance-missions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{ "name": "x-webhook-secret", "value": "change-me" }]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"days\": 7 }"
+      },
+      "id": "http1",
+      "name": "API relance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "webhookUri": "https://discord.com/api/webhooks/XXXX/YYYY",
+        "text": "=Relance : {{$json.count}} mission(s) ouvertes depuis > 7j"
+      },
+      "id": "discord1",
+      "name": "Discord notif",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Tous les jours": {
+      "main": [[{ "node": "API relance", "type": "main", "index": 0 }]]
+    },
+    "API relance": {
+      "main": [[{ "node": "Discord notif", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}
