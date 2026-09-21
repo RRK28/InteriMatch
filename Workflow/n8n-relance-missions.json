@@ -10,7 +10,7 @@
       "id": "cron1",
       "name": "Tous les jours",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1,
+      "typeVersion": 1.2,
       "position": [200, 300]
     },
     {
@@ -27,32 +27,22 @@
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "{ \"days\": 0 }",
-        "options": {
-          "timeout": 60000
-        }
+        "options": { "timeout": 60000 }
       },
       "id": "http1",
       "name": "API relance",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
+      "typeVersion": 4.2,
       "position": [440, 300]
     },
     {
       "parameters": {
-        "conditions": {
-          "number": [
-            {
-              "value1": "={{ $json.count }}",
-              "operation": "larger",
-              "value2": 0
-            }
-          ]
-        }
+        "jsCode": "const data = items[0].json;\nconst count = Number(data.count || 0);\nif (count <= 0) {\n  return [];\n}\nreturn [{ json: data }];"
       },
-      "id": "if1",
-      "name": "IF missions à relancer",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
+      "id": "code1",
+      "name": "Filtrer si count > 0",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [680, 300]
     },
     {
@@ -68,25 +58,14 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Relance — mission encore ouverte sur InteriMatch\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Tu as <strong>{{ $json.count }}</strong> mission(s) ouverte(s) (ex. {{ $json.missions[0].titre }}).</p><p>Connecte-toi pour mettre à jour le statut ou accepter un candidat.</p><p><em>Destinataire de test : leglitcher692@gmail.com</em></p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Relance — mission encore ouverte sur InteriMatch\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Tu as <strong>{{ $json.count }}</strong> mission(s) ouverte(s) (ex. {{ $json.missions[0].titre }}).</p><p>Connecte-toi pour mettre à jour le statut ou accepter un candidat.</p>\"\n}",
+        "options": {}
       },
       "id": "brevo1",
       "name": "Brevo — mail relance",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [920, 220]
-    },
-    {
-      "parameters": {
-        "content": "## Aucune mission à relancer\nPas d'email envoyé (normal si tout est à jour).",
-        "height": 160,
-        "width": 280
-      },
-      "id": "note1",
-      "name": "Sticky Note",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [920, 400]
+      "typeVersion": 4.2,
+      "position": [920, 300]
     }
   ],
   "connections": {
@@ -94,16 +73,13 @@
       "main": [[{ "node": "API relance", "type": "main", "index": 0 }]]
     },
     "API relance": {
-      "main": [[{ "node": "IF missions à relancer", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Filtrer si count > 0", "type": "main", "index": 0 }]]
     },
-    "IF missions à relancer": {
-      "main": [
-        [{ "node": "Brevo — mail relance", "type": "main", "index": 0 }],
-        []
-      ]
+    "Filtrer si count > 0": {
+      "main": [[{ "node": "Brevo — mail relance", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
   "settings": { "executionOrder": "v1" },
-  "versionId": "4"
+  "versionId": "5"
 }

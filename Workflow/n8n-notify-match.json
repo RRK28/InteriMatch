@@ -11,33 +11,48 @@
       "id": "wh1",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        240,
-        300
-      ],
+      "typeVersion": 2,
+      "position": [220, 300],
       "webhookId": "interimatch-notify"
     },
     {
       "parameters": {
+        "jsCode": "const raw = items[0].json;\nconst body = raw.body || raw;\nconst type = body.type || raw.type;\nreturn [{ json: { ...body, type, _raw: raw } }];"
+      },
+      "id": "code1",
+      "name": "Normaliser payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
         "conditions": {
-          "string": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.body.type || $json.type }}",
-              "operation": "equals",
-              "value2": "high_match"
+              "id": "c1",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "high_match",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
       "id": "if1",
       "name": "IF high match",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [
-        480,
-        300
-      ]
+      "typeVersion": 2.2,
+      "position": [660, 300]
     },
     {
       "parameters": {
@@ -46,28 +61,20 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "api-key",
-              "value": "={{ $env.BREVO_API_KEY }}"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
+            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Nouveau match > 80% — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une mission <strong>{{ $json.body.mission || $json.mission }}</strong> correspond à un profil (score ≥ 80%).</p><p>Connecte-toi sur InteriMatch.</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Nouveau match > 80% — {{ $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une mission <strong>{{ $json.mission }}</strong> a un match ≥ 80%.</p><p>Connecte-toi sur InteriMatch.</p>\"\n}",
+        "options": {}
       },
       "id": "brevo1",
-      "name": "Brevo — mail match ≥80%",
+      "name": "Brevo — mail match",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [
-        720,
-        200
-      ]
+      "typeVersion": 4.2,
+      "position": [900, 200]
     },
     {
       "parameters": {
@@ -76,64 +83,38 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "api-key",
-              "value": "={{ $env.BREVO_API_KEY }}"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
+            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Candidature reçue — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une candidature pour <strong>{{ $json.body.mission || $json.mission }}</strong> est enregistrée (score {{ $json.body.score || $json.score }}/100).</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Candidature reçue — {{ $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Candidature pour <strong>{{ $json.mission }}</strong> enregistrée (score {{ $json.score }}/100).</p>\"\n}",
+        "options": {}
       },
       "id": "brevo2",
       "name": "Brevo — conf candidature",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4,
-      "position": [
-        720,
-        400
-      ]
+      "typeVersion": 4.2,
+      "position": [900, 400]
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [
-        [
-          {
-            "node": "IF high match",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Normaliser payload", "type": "main", "index": 0 }]]
+    },
+    "Normaliser payload": {
+      "main": [[{ "node": "IF high match", "type": "main", "index": 0 }]]
     },
     "IF high match": {
       "main": [
-        [
-          {
-            "node": "Brevo — mail match ≥80%",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Brevo — conf candidature",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Brevo — mail match", "type": "main", "index": 0 }],
+        [{ "node": "Brevo — conf candidature", "type": "main", "index": 0 }]
       ]
     }
   },
   "active": false,
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "versionId": "3"
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": true },
+  "versionId": "5"
 }
