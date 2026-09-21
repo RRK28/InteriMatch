@@ -6,8 +6,9 @@ const PORT = process.env.PORT || 4000;
 async function start() {
   try {
     await connectMongo();
-  } catch {
-    console.warn('mongo pas dispo, logs matching désactivés');
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn('mongo pas dispo, logs matching désactivés:', msg);
   }
 
   app.listen(PORT, () => {

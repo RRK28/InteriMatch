@@ -34,9 +34,9 @@ export function isMongoReady(): boolean {
 
 export async function connectMongo() {
   const url = process.env.MONGO_URL || 'mongodb://localhost:27017/interimatch';
-  // timeout court sinon ça bloque le boot si docker/Atlas est down
+  // Atlas depuis Render free peut être lent au cold start
   await mongoose.connect(url, {
-    serverSelectionTimeoutMS: 4000,
+    serverSelectionTimeoutMS: 15000,
   });
   console.log('mongo ok');
 }
