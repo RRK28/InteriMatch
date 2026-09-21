@@ -13,6 +13,7 @@ type AuthCtx = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithToken: (token: string) => Promise<void>;
   register: (payload: any) => Promise<void>;
   logout: () => void;
   refresh: () => Promise<void>;
@@ -34,7 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const me = await api<User>('/api/auth/me');
       setUser(me);
-    } catch {
+    } catch (e) {
+      console.warn('auth/me fail', e);
       localStorage.removeItem('im_token');
       setUser(null);
     } finally {
@@ -55,6 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await refresh();
   }
 
+  async function loginWithToken(token: string) {
+    localStorage.setItem('im_token', token);
+    setLoading(true);
+    await refresh();
+  }
+
   async function register(payload: any) {
     const res = await api<{ token: string }>('/api/auth/register', {
       method: 'POST',
@@ -70,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <Ctx.Provider value={{ user, loading, login, register, logout, refresh }}>
+    <Ctx.Provider value={{ user, loading, login, loginWithToken, register, logout, refresh }}>
       {children}
     </Ctx.Provider>
   );

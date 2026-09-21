@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../hooks/useAuth';
 
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '');
 
@@ -32,40 +33,32 @@ export function OAuthButtons({
       .catch(() => setProviders({ google: false, microsoft: false }));
   }, []);
 
-  if (!providers.google && !providers.microsoft) {
-    return (
-      <p className="meta">
-        SSO Google / Microsoft : à configurer (variables d’env) — voir DEPLOY.md
-      </p>
-    );
-  }
+  if (!providers.google && !providers.microsoft) return null;
 
   return (
-    <div style={{ margin: '1.25rem 0', maxWidth: 420 }}>
-      <p className="meta" style={{ marginBottom: '0.5rem' }}>
-        Ou continuer avec un compte (RGPD accepté en continuant) :
-      </p>
+    <div className="oauth-block">
       {!hideRoleSelect && (
-        <label style={{ marginBottom: '0.75rem' }}>
-          Je m’inscris / me connecte en tant que
+        <label className="oauth-role">
+          Je me connecte en tant que
           <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
             <option value="INTERIMAIRE">Intérimaire</option>
             <option value="ENTREPRISE">Entreprise</option>
           </select>
         </label>
       )}
-      <div className="cta-row" style={{ marginTop: '0.5rem' }}>
+      <div className="oauth-btns">
         {providers.google && (
-          <a className="btn secondary" href={`${API_BASE}/api/auth/google?role=${role}`}>
-            Google
+          <a className="btn-oauth btn-oauth--google" href={`${API_BASE}/api/auth/google?role=${role}`}>
+            Continuer avec Google
           </a>
         )}
         {providers.microsoft && (
-          <a className="btn secondary" href={`${API_BASE}/api/auth/microsoft?role=${role}`}>
-            Microsoft
+          <a className="btn-oauth btn-oauth--ms" href={`${API_BASE}/api/auth/microsoft?role=${role}`}>
+            Continuer avec Microsoft
           </a>
         )}
       </div>
+      <p className="oauth-note">En continuant, tu acceptes le traitement RGPD de ton profil.</p>
     </div>
   );
 }
@@ -74,28 +67,40 @@ export function OAuthErrorBanner() {
   const [params] = useSearchParams();
   const err = params.get('oauth_error');
   if (!err) return null;
-  return <p className="err">{err}</p>;
+  return (
+    <p className="err" role="alert">
+      {err}
+    </p>
+  );
 }
 
 export function OauthCallbackPage() {
-  const [params] = useSearchParams();
-  const [msg, setMsg] = useState('connexion…');
+  const { loginWithToken } = useAuth();
+  const nav = useNavigate();
+  const [msg, setMsg] = useState('Finalisation de la connexion…');
 
   useEffect(() => {
-    const token = params.get('token');
+    const raw = window.location.hash.replace(/^#/, '');
+    const token = new URLSearchParams(raw).get('token');
     if (!token) {
-      setMsg('token manquant');
+      setMsg('Token manquant — réessaie depuis la page connexion.');
       return;
     }
-    localStorage.setItem('im_token', token);
-    window.location.replace('/dashboard');
-  }, [params]);
+    loginWithToken(token)
+      .then(() => nav('/dashboard', { replace: true }))
+      .catch(() => {
+        setMsg('Impossible de valider la session. Réessaie.');
+        nav('/login?oauth_error=' + encodeURIComponent('session invalide'), { replace: true });
+      });
+  }, []);
 
   return (
-    <section>
-      <h1>Connexion SSO</h1>
-      <p className="meta">{msg}</p>
-      <Link to="/login">Retour login</Link>
+    <section className="auth-page">
+      <div className="auth-card">
+        <h1>Connexion SSO</h1>
+        <p className="meta">{msg}</p>
+        <Link to="/login">Retour</Link>
+      </div>
     </section>
   );
 }

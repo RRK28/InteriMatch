@@ -25,32 +25,44 @@ export default function Login() {
   }
 
   return (
-    <section>
-      <h1>Connexion</h1>
-      <p className="meta">Comptes démo seed : chantier@btp-lyon.fr / karim.macon@mail.com — password123</p>
-      <OAuthErrorBanner />
-      <OAuthButtons />
-      <form className="stack" onSubmit={onSubmit}>
-        <label>
-          Email
-          <input name="email" type="email" required autoComplete="username" />
-        </label>
-        <label>
-          Mot de passe
-          <input name="password" type="password" required autoComplete="current-password" />
-        </label>
-        {err && (
-          <p className="err" role="alert">
-            {err}
-          </p>
-        )}
-        <button className="btn" disabled={loading}>
-          {loading ? '...' : 'Se connecter'}
-        </button>
-      </form>
-      <p className="meta">
-        Pas de compte ? <Link to="/register">Inscription</Link>
-      </p>
+    <section className="auth-page">
+      <div className="auth-visual" aria-hidden="true">
+        <img src="/images/hero-chantier.jpg" alt="" />
+        <div className="auth-visual__caption">
+          <span>InteriMatch</span>
+          <p>Le bon profil, sur le bon chantier.</p>
+        </div>
+      </div>
+      <div className="auth-card">
+        <h1>Connexion</h1>
+        <p className="meta">Compte démo : chantier@btp-lyon.fr / password123</p>
+        <OAuthErrorBanner />
+        <OAuthButtons />
+        <div className="auth-sep">
+          <span>ou email</span>
+        </div>
+        <form className="stack auth-form" onSubmit={onSubmit}>
+          <label>
+            Email
+            <input name="email" type="email" required autoComplete="username" />
+          </label>
+          <label>
+            Mot de passe
+            <input name="password" type="password" required autoComplete="current-password" />
+          </label>
+          {err && (
+            <p className="err" role="alert">
+              {err}
+            </p>
+          )}
+          <button className="btn" disabled={loading}>
+            {loading ? '…' : 'Se connecter'}
+          </button>
+        </form>
+        <p className="meta auth-foot">
+          Pas de compte ? <Link to="/register">Inscription</Link>
+        </p>
+      </div>
     </section>
   );
 }
