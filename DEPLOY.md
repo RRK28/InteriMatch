@@ -1,39 +1,57 @@
 # Déploiement Render (soutenance)
 
-## Prérequis
-- Compte Render
-- Repo GitHub déjà poussé (`main`)
-- (optionnel) Mongo Atlas si tu veux les logs matching
+## État actuel
+- ✅ Fichiers prêts (`render.yaml`, scripts build/start)
+- ✅ Postgres free **interimatch-db** créé (expire ~21/10/2026)
+- ⏳ Web Service : Render doit d’abord accéder au repo GitHub Epitech
 
-## Déploiement Blueprint (recommandé)
+## Étape critique — connecter GitHub à Render
 
-1. Va sur https://dashboard.render.com/blueprints
-2. **New Blueprint Instance**
-3. Connecte le repo `D-WEB-901-LYN-9-1-InteriMatch-4`
-4. Render lit `render.yaml` → crée Postgres free + Web Service free
-5. Deploy
+1. Ouvre https://dashboard.render.com/account/github  
+   (ou **Account Settings → Connected Accounts → GitHub**)
+2. **Connect / Configure** GitHub
+3. Autorise l’org **`EpitechMscProPromo2027`** (sinon repo invisible)
+4. Si l’org a du **SAML SSO** : sur GitHub → Settings → Applications → Render → **Authorize** pour l’org
 
-URL finale du type : `https://interimatch-xxxx.onrender.com`
+## Créer le Web Service
 
-## Comptes démo (après 1er deploy / seed)
+### Option A — Blueprint (simple)
+1. https://dashboard.render.com/blueprints/new  
+2. Choisis le repo `D-WEB-901-LYN-9-1-InteriMatch-4`  
+3. Valide `render.yaml`  
+   - Si Postgres existe déjà, Render peut proposer de le réutiliser / skip la 2e DB
+
+### Option B — Web Service manuel
+1. **New → Web Service** → repo InteriMatch  
+2. Réglages :
+   - Runtime : **Node**
+   - Region : **Frankfurt**
+   - Plan : **Free**
+   - Build : `bash scripts/render-build.sh`
+   - Start : `bash scripts/render-start.sh`
+   - Health check : `/api/health`
+3. Env vars :
+   - `NODE_ENV` = `production`
+   - `DATABASE_URL` = Internal Database URL de **interimatch-db**  
+     (Dashboard → interimatch-db → Connections → **Internal Database URL**)
+   - `JWT_SECRET` = generate
+   - `ENCRYPTION_KEY` = generate (n’importe quelle longue string)
+
+Dashboard Postgres : https://dashboard.render.com/d/dpg-daoenibtqb8s73f1t0h0-a
+
+## Après le 1er deploy
+URL du type `https://interimatch-xxxx.onrender.com`
+
+Comptes seed :
 - `chantier@btp-lyon.fr` / `password123`
 - `karim.macon@mail.com` / `password123`
 
 ## Avant la soutenance
-Le free tier **s’endort** après ~15 min. Ouvre l’URL **2–3 min avant** pour réveiller le service.
+Ouvre l’URL **2–3 min avant** (cold start free ~30–60s).
 
 ## Mongo (optionnel)
-1. Crée un cluster free sur https://cloud.mongodb.com
-2. Dans Render → service → Environment → `MONGO_URL` = connection string Atlas
+Sans `MONGO_URL` l’app marche (logs matching skippés). Atlas free si besoin.
 
-Sans Mongo, l’app tourne quand même (logs matching skippés).
-
-## Limites free
-- Postgres free : ~30 jours puis expire
-- Web free : cold start ~30–60s
-- 750 h instance / mois
-
-## Fichiers utiles
-- `render.yaml` — blueprint
-- `scripts/render-build.sh` — install + build front/back + prisma + seed
-- `scripts/render-start.sh` — démarre l’API (sert aussi le front buildé)
+## Sécurité
+Si tu as collé une **API key Render** dans le chat → **révoque-la** et régénère :  
+https://dashboard.render.com/u/settings#api-keys
