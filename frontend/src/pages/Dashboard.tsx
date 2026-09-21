@@ -8,11 +8,25 @@ export default function Dashboard() {
   const [data, setData] = useState<any[]>([]);
   const [matches, setMatches] = useState<any[]>([]);
   const [err, setErr] = useState('');
+  const [okMsg, setOkMsg] = useState('');
+  const [relanceLoading, setRelanceLoading] = useState(false);
   const [tech, setTech] = useState<{ logs: any[]; events: any[]; mongoOk: boolean } | null>(null);
 
   async function refresh() {
     const missions = await api('/api/missions/mine');
     setData(missions);
+  }
+
+  async function refreshTech() {
+    const [logs, autos] = await Promise.all([
+      api('/api/matching/logs').catch(() => ({ logs: [], error: true })),
+      api('/api/matching/automations').catch(() => ({ events: [], error: true })),
+    ]);
+    setTech({
+      logs: logs.logs || [],
+      events: autos.events || [],
+      mongoOk: !logs.error,
+    });
   }
 
   useEffect(() => {
@@ -22,16 +36,7 @@ export default function Dashboard() {
       api('/api/matching/for-me').then(setMatches).catch(console.error);
     }
     if (user.role === 'ENTREPRISE') {
-      Promise.all([
-        api('/api/matching/logs').catch(() => ({ logs: [], error: true })),
-        api('/api/matching/automations').catch(() => ({ events: [], error: true })),
-      ]).then(([logs, autos]) => {
-        setTech({
-          logs: logs.logs || [],
-          events: autos.events || [],
-          mongoOk: !logs.error,
-        });
-      });
+      refreshTech().catch(console.error);
     }
   }, [user]);
 
@@ -59,6 +64,21 @@ export default function Dashboard() {
     }
   }
 
+  async function relancerMails() {
+    setErr('');
+    setOkMsg('');
+    setRelanceLoading(true);
+    try {
+      const r = await api('/api/missions/relancer-mails', { method: 'POST', body: '{}' });
+      setOkMsg(r.message || 'Relance envoyée');
+      await refreshTech();
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setRelanceLoading(false);
+    }
+  }
+
   return (
     <section>
       <h1>Dashboard</h1>
@@ -66,14 +86,27 @@ export default function Dashboard() {
         Connecté en tant que {user.role.toLowerCase()} ({user.email})
       </p>
       {err && <p className="err">{err}</p>}
+      {okMsg && <p className="ok">{okMsg}</p>}
 
       {user.role === 'ENTREPRISE' && (
         <>
-          <p>
+          <div className="cta-row" style={{ marginBottom: '1.25rem', flexWrap: 'wrap' }}>
             <Link className="btn" to="/missions/nouvelle">
               + Nouvelle mission
             </Link>
-          </p>
+            <button
+              type="button"
+              className="btn secondary"
+              disabled={relanceLoading}
+              onClick={relancerMails}
+            >
+              {relanceLoading ? 'Envoi…' : 'Relancer par mail (missions ouvertes)'}
+            </button>
+            <Link className="btn ghost" to="/matching">
+              Schéma matching
+            </Link>
+          </div>
+
           <div className="grid">
             {data.map((m) => (
               <article key={m.id} className="mission">
@@ -187,6 +220,11 @@ export default function Dashboard() {
 
       {user.role === 'INTERIMAIRE' && (
         <>
+          <p>
+            <Link className="btn ghost" to="/matching">
+              Schéma matching
+            </Link>
+          </p>
           <h2>Missions qui matchent</h2>
           <div className="grid">
             {matches.slice(0, 8).map((row) => (

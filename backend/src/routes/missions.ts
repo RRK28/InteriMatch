@@ -54,6 +54,35 @@ router.get('/mine', requireAuth, async (req, res) => {
   res.json(cands);
 });
 
+/** Bouton dashboard entreprise → mails de relance (n8n / Brevo) */
+router.post('/relancer-mails', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
+  const missions = await prisma.mission.findMany({
+    where: { entrepriseId: req.user!.id, status: 'OUVERTE' },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  if (!missions.length) {
+    return res.status(400).json({ error: 'aucune mission ouverte à relancer' });
+  }
+
+  const titres = missions.map((m) => m.titre).join(', ');
+  await notifyN8n({
+    type: 'relance',
+    email: req.user!.email,
+    mission: `${missions.length} mission(s) ouverte(s) — ex. ${missions[0].titre}`,
+    missionId: missions[0].id,
+    count: missions.length,
+    score: 0,
+  });
+
+  res.json({
+    ok: true,
+    count: missions.length,
+    missions: missions.map((m) => ({ id: m.id, titre: m.titre })),
+    message: `Relance envoyée pour ${missions.length} mission(s) : ${titres}`,
+  });
+});
+
 router.get('/:id', optionalAuth, async (req, res) => {
   const mission = await prisma.mission.findUnique({
     where: { id: req.params.id },

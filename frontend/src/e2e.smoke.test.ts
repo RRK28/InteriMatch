@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
  * (pas de browser ; valide les contrats que le front consomme)
  */
 
-const API = process.env.VITE_API_URL || 'http://localhost:4000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 describe('contrats API (e2e smoke)', () => {
   it('health répond', async () => {

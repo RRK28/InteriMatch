@@ -12,18 +12,24 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [220, 300],
+      "position": [
+        220,
+        300
+      ],
       "webhookId": "interimatch-notify"
     },
     {
       "parameters": {
-        "jsCode": "const raw = items[0].json;\nconst body = raw.body || raw;\nconst type = body.type || raw.type;\nreturn [{ json: { ...body, type, _raw: raw } }];"
+        "jsCode": "const raw = items[0].json;\nconst body = raw.body || raw;\nconst type = body.type || raw.type;\nconst mission = body.mission || '';\nconst score = body.score ?? '';\nlet subject = '';\nlet html = '';\nif (type === 'high_match') {\n  subject = 'Nouveau match > 80% — ' + mission;\n  html = '<p>Bonjour,</p><p>Une mission <strong>' + mission + '</strong> a un match ≥ 80%.</p><p>Connecte-toi sur InteriMatch.</p>';\n} else if (type === 'relance') {\n  subject = 'Relance — mission encore ouverte sur InteriMatch';\n  html = '<p>Bonjour,</p><p>Tu as des missions encore ouvertes : <strong>' + mission + '</strong>.</p><p>Connecte-toi sur InteriMatch.</p>';\n} else {\n  subject = 'Candidature reçue — ' + mission;\n  html = '<p>Bonjour,</p><p>Candidature pour <strong>' + mission + '</strong> enregistrée (score ' + score + '/100).</p>';\n}\nreturn [{ json: { ...body, type, mission, score, subject, html } }];"
       },
       "id": "code1",
       "name": "Normaliser payload",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [440, 300]
+      "position": [
+        440,
+        300
+      ]
     },
     {
       "parameters": {
@@ -52,7 +58,10 @@
       "name": "IF high match",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [660, 300]
+      "position": [
+        660,
+        300
+      ]
     },
     {
       "parameters": {
@@ -61,20 +70,29 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Nouveau match > 80% — {{ $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une mission <strong>{{ $json.mission }}</strong> a un match ≥ 80%.</p><p>Connecte-toi sur InteriMatch.</p>\"\n}",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"{{ $json.subject }}\",\n  \"htmlContent\": \"{{ $json.html }}\"\n}",
         "options": {}
       },
       "id": "brevo1",
       "name": "Brevo — mail match",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [900, 200]
+      "position": [
+        900,
+        200
+      ]
     },
     {
       "parameters": {
@@ -83,38 +101,79 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Candidature reçue — {{ $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Candidature pour <strong>{{ $json.mission }}</strong> enregistrée (score {{ $json.score }}/100).</p>\"\n}",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"{{ $json.subject }}\",\n  \"htmlContent\": \"{{ $json.html }}\"\n}",
         "options": {}
       },
       "id": "brevo2",
       "name": "Brevo — conf candidature",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [900, 400]
+      "position": [
+        900,
+        400
+      ]
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Normaliser payload", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Normaliser payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Normaliser payload": {
-      "main": [[{ "node": "IF high match", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "IF high match",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "IF high match": {
       "main": [
-        [{ "node": "Brevo — mail match", "type": "main", "index": 0 }],
-        [{ "node": "Brevo — conf candidature", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Brevo — mail match",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Brevo — conf candidature",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
-  "meta": { "templateCredsSetupCompleted": true },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "versionId": "5"
 }

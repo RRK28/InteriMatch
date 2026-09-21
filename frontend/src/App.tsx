@@ -11,6 +11,7 @@ import Tendances from './pages/Tendances';
 import Mentions from './pages/Mentions';
 import NouvelleMission from './pages/NouvelleMission';
 import EditMission from './pages/EditMission';
+import MatchingSchema from './pages/MatchingSchema';
 import { OauthCallbackPage } from './components/OAuthButtons';
 
 function Nav() {
@@ -24,6 +25,7 @@ function Nav() {
         <NavLink to="/missions">Missions</NavLink>
         <NavLink to="/tendances">Tendances</NavLink>
         {user && <NavLink to="/dashboard">Dashboard</NavLink>}
+        {user && <NavLink to="/matching">Matching</NavLink>}
         {user && <NavLink to="/profil">Profil</NavLink>}
         {!user && <NavLink to="/login">Connexion</NavLink>}
         {!user && <NavLink to="/register">Inscription</NavLink>}
@@ -55,6 +57,7 @@ export default function App() {
           <Route path="/missions/:id/edit" element={<EditMission />} />
           <Route path="/missions/:id" element={<MissionDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/matching" element={<MatchingSchema />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/tendances" element={<Tendances />} />
           <Route path="/mentions-legales" element={<Mentions />} />

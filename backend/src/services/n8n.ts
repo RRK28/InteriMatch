@@ -13,6 +13,14 @@ export type N8nPayload =
       mission: string;
       missionId?: string;
       score: number;
+    }
+  | {
+      type: 'relance';
+      email: string;
+      mission: string;
+      missionId?: string;
+      count: number;
+      score?: number;
     };
 
 /** Envoie vers n8n si configuré + archive l'événement dans Mongo (preuve soutenance). */
