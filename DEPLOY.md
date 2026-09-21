@@ -78,4 +78,11 @@ Sans ces variables, les boutons SSO restent masqués (auth email/mdp OK).
    - `MICROSOFT_CLIENT_SECRET`
    - `MICROSOFT_CALLBACK_URL` = `https://TON-APP.onrender.com/api/auth/microsoft/callback`
 
-Sur login/register : choisir le rôle (intérimaire / entreprise) puis Google ou Microsoft.
+- Sur login/register : choisir le rôle (intérimaire / entreprise) puis Google ou Microsoft.
+
+## Démo FT (soutenance)
+Sur la page **Tendances** :
+- 5 clics rapides sur le titre **ou**
+- petit point quasi invisible en bas à droite
+
+→ panneau requête / brut / nettoyé / champs gardés vs jetés.
