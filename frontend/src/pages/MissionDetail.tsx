@@ -71,6 +71,12 @@ export default function MissionDetail() {
           <>
             {' · '}
             <Link to="/dashboard">dashboard</Link>
+            {user.id === m.entrepriseId && m.status !== 'TERMINEE' && m.status !== 'ANNULEE' && (
+              <>
+                {' · '}
+                <Link to={`/missions/${id}/edit`}>modifier</Link>
+              </>
+            )}
           </>
         )}
       </p>

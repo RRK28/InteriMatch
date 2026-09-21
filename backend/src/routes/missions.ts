@@ -124,6 +124,56 @@ router.post('/', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
   res.status(201).json(mission);
 });
 
+// modification complète (sauf status — géré à part)
+router.put('/:id', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
+  const mission = await prisma.mission.findFirst({
+    where: { id: req.params.id, entrepriseId: req.user!.id },
+  });
+  if (!mission) return res.status(404).json({ error: 'introuvable' });
+  if (mission.status === 'TERMINEE' || mission.status === 'ANNULEE') {
+    return res.status(400).json({ error: 'mission terminée/annulée, plus modifiable' });
+  }
+
+  const { titre, description, metier, competences, ville, codePostal, dateDebut, dateFin, remuneration } =
+    req.body;
+
+  if (!titre || !metier || !ville || !dateDebut || !dateFin) {
+    return res.status(400).json({ error: 'champs manquants' });
+  }
+
+  const debut = new Date(dateDebut);
+  const fin = new Date(dateFin);
+  if (fin <= debut) return res.status(400).json({ error: 'dates incohérentes' });
+
+  const duree = daysBetween(debut, fin);
+  if (duree > MAX_MISSION_DAYS) {
+    return res.status(400).json({
+      error: `durée max intérim dépassée (${duree}j > ${MAX_MISSION_DAYS}j)`,
+    });
+  }
+
+  const metierKey = String(metier).toLowerCase();
+  const epi = EPI_PAR_METIER[metierKey] || EPI_PAR_METIER.default;
+
+  const updated = await prisma.mission.update({
+    where: { id: mission.id },
+    data: {
+      titre,
+      description: description || '',
+      metier: metierKey,
+      competences: competences || [],
+      ville,
+      codePostal: codePostal || '',
+      dateDebut: debut,
+      dateFin: fin,
+      remuneration: Number(remuneration) || 14,
+      epiObligatoires: epi,
+    },
+  });
+
+  res.json(updated);
+});
+
 router.patch('/:id/status', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
   const mission = await prisma.mission.findFirst({
     where: { id: req.params.id, entrepriseId: req.user!.id },

@@ -135,6 +135,11 @@ export default function Dashboard() {
                   <Link className="btn secondary" to={`/missions/${m.id}`} style={{ padding: '0.35rem 0.7rem' }}>
                     Détail
                   </Link>
+                  {m.status !== 'TERMINEE' && m.status !== 'ANNULEE' && (
+                    <Link className="btn ghost" to={`/missions/${m.id}/edit`} style={{ padding: '0.35rem 0.7rem' }}>
+                      Modifier
+                    </Link>
+                  )}
                   {m.status === 'OUVERTE' && (
                     <button className="btn ghost" type="button" onClick={() => setStatus(m.id, 'POURVUE')}>
                       Marquer pourvue

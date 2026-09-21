@@ -10,6 +10,7 @@ import Profil from './pages/Profil';
 import Tendances from './pages/Tendances';
 import Mentions from './pages/Mentions';
 import NouvelleMission from './pages/NouvelleMission';
+import EditMission from './pages/EditMission';
 
 function Nav() {
   const { user, logout } = useAuth();
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/missions" element={<Missions />} />
           <Route path="/missions/nouvelle" element={<NouvelleMission />} />
+          <Route path="/missions/:id/edit" element={<EditMission />} />
           <Route path="/missions/:id" element={<MissionDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profil" element={<Profil />} />
