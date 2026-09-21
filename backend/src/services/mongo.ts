@@ -16,6 +16,7 @@ export const MatchingLog =
 
 export async function connectMongo() {
   const url = process.env.MONGO_URL || 'mongodb://localhost:27017/interimatch';
-  await mongoose.connect(url);
+  // timeout court sinon ça bloque le boot si docker est down
+  await mongoose.connect(url, { serverSelectionTimeoutMS: 2500 });
   console.log('mongo ok');
 }

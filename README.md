@@ -11,12 +11,15 @@ Plateforme d’intérim **BTP** : entreprises ↔ ouvriers, matching simple, ten
 
 ## Lancer
 ```bash
+# Docker Desktop doit tourner (postgres + mongo)
 docker compose up -d
 cp backend/.env.example backend/.env
 cd backend && npm i && npx prisma db push && npm run db:seed && npm run dev
 # autre terminal
 cd frontend && npm i && npm run dev
 ```
+
+Si l’API démarre sans mongo, les logs de matching sont juste skippés (ok pour démo).
 
 CLI samples :
 ```bash

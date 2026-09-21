@@ -1,5 +1,7 @@
+import path from 'path';
 import dotenv from 'dotenv';
-dotenv.config();
+// charge .env même si on lance pas depuis backend/
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 import express from 'express';
 import cors from 'cors';
@@ -43,7 +45,7 @@ async function start() {
   try {
     await connectMongo();
   } catch (e) {
-    console.warn('mongo pas dispo, logs matching désactivés', e);
+    console.warn('mongo pas dispo, logs matching désactivés');
   }
 
   app.listen(PORT, () => {
@@ -51,8 +53,7 @@ async function start() {
   });
 }
 
-if (require.main === module) {
-  start();
-}
+// tsx ne set pas toujours require.main → on démarre direct
+start();
 
 export default app;
