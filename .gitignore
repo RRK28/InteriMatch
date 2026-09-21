@@ -12,3 +12,5 @@ Ressources/samples/*-raw.json
 data/raw/
 backend/prisma/*.db
 frontend/tsconfig.tsbuildinfo
+# workflows n8n avec clés Brevo (jamais push)
+Workflow/local/
