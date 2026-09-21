@@ -45,3 +45,6 @@ cd backend && npm test
 - Chiffrage : `Projet/chiffrage-reel.md`
 
 Clés FT : `Ressources/.env.france-travail` (pas commit).
+
+## Déploiement
+Voir [DEPLOY.md](DEPLOY.md) (Render free).

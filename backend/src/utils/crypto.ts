@@ -4,7 +4,7 @@ const ALGO = 'aes-256-cbc';
 
 function keyBuf() {
   const k = process.env.ENCRYPTION_KEY || '0123456789abcdef0123456789abcdef';
-  return Buffer.from(k.slice(0, 32));
+  return crypto.createHash('sha256').update(k).digest();
 }
 
 export function encrypt(text: string): string {
