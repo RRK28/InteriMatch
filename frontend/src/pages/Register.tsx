@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { OAuthButtons } from '../components/OAuthButtons';
 
 export default function Register() {
   const { register } = useAuth();
@@ -35,6 +36,7 @@ export default function Register() {
   return (
     <section>
       <h1>Inscription</h1>
+      <OAuthButtons defaultRole={role} role={role} onRoleChange={setRole} hideRoleSelect />
       <form className="stack" onSubmit={onSubmit}>
         <label>
           Type de compte
@@ -78,6 +80,9 @@ export default function Register() {
         {err && <p className="err">{err}</p>}
         <button className="btn">Créer mon compte</button>
       </form>
+      <p className="meta">
+        Déjà un compte ? <Link to="/login">Connexion</Link>
+      </p>
     </section>
   );
 }

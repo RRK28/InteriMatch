@@ -61,6 +61,10 @@ router.post('/login', rateLimit(15, 60_000), async (req, res) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return res.status(401).json({ error: 'identifiants incorrects' });
 
+  if (!user.passwordHash) {
+    return res.status(401).json({ error: 'ce compte utilise Google/Microsoft — connecte-toi via SSO' });
+  }
+
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) return res.status(401).json({ error: 'identifiants incorrects' });
 

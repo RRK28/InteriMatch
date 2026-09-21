@@ -6,11 +6,15 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
+import oauthRoutes from './routes/oauth';
 import missionRoutes from './routes/missions';
 import profileRoutes from './routes/profiles';
 import matchRoutes from './routes/matching';
 import tendanceRoutes from './routes/tendances';
 import webhookRoutes from './routes/webhooks';
+import { configurePassport, passport } from './services/passport';
+
+configurePassport();
 
 const app = express();
 
@@ -26,12 +30,14 @@ app.use(
   })
 );
 app.use(express.json({ limit: '1mb' }));
+app.use(passport.initialize());
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'interimatch' });
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', oauthRoutes);
 app.use('/api/missions', missionRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/matching', matchRoutes);

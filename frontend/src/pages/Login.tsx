@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { OAuthButtons, OAuthErrorBanner } from '../components/OAuthButtons';
 
 export default function Login() {
   const { login } = useAuth();
@@ -27,6 +28,8 @@ export default function Login() {
     <section>
       <h1>Connexion</h1>
       <p className="meta">Comptes démo seed : chantier@btp-lyon.fr / karim.macon@mail.com — password123</p>
+      <OAuthErrorBanner />
+      <OAuthButtons />
       <form className="stack" onSubmit={onSubmit}>
         <label>
           Email
@@ -36,7 +39,11 @@ export default function Login() {
           Mot de passe
           <input name="password" type="password" required autoComplete="current-password" />
         </label>
-        {err && <p className="err" role="alert">{err}</p>}
+        {err && (
+          <p className="err" role="alert">
+            {err}
+          </p>
+        )}
         <button className="btn" disabled={loading}>
           {loading ? '...' : 'Se connecter'}
         </button>

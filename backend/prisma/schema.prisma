@@ -22,10 +22,14 @@ enum MissionStatus {
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
-  passwordHash String
+  passwordHash String?
   role         Role
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  // OAuth (Passport Google / Microsoft)
+  googleId     String?  @unique
+  microsoftId  String?  @unique
 
   // RGPD
   consentRgpd  Boolean  @default(false)

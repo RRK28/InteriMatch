@@ -29,6 +29,18 @@ services:
         generateValue: true
       - key: MONGO_URL
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: MICROSOFT_CLIENT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false
+      - key: MICROSOFT_CALLBACK_URL
+        sync: false
       - key: N8N_WEBHOOK_URL
         sync: false
       - key: WEBHOOK_SECRET

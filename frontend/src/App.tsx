@@ -11,6 +11,7 @@ import Tendances from './pages/Tendances';
 import Mentions from './pages/Mentions';
 import NouvelleMission from './pages/NouvelleMission';
 import EditMission from './pages/EditMission';
+import { OauthCallbackPage } from './components/OAuthButtons';
 
 function Nav() {
   const { user, logout } = useAuth();
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/oauth/callback" element={<OauthCallbackPage />} />
           <Route path="/missions" element={<Missions />} />
           <Route path="/missions/nouvelle" element={<NouvelleMission />} />
           <Route path="/missions/:id/edit" element={<EditMission />} />

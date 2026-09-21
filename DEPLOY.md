@@ -52,6 +52,30 @@ Ouvre l’URL **2–3 min avant** (cold start free ~30–60s).
 ## Mongo (optionnel)
 Sans `MONGO_URL` l’app marche (logs matching skippés). Atlas free si besoin.
 
-## Sécurité
-Si tu as collé une **API key Render** dans le chat → **révoque-la** et régénère :  
-https://dashboard.render.com/u/settings#api-keys
+## OAuth Google / Microsoft (Passport)
+
+Sans ces variables, les boutons SSO restent masqués (auth email/mdp OK).
+
+### Google
+1. https://console.cloud.google.com/apis/credentials → Create OAuth client (Web)
+2. Authorized redirect URIs :
+   - `http://localhost:4000/api/auth/google/callback`
+   - `https://TON-APP.onrender.com/api/auth/google/callback`
+3. Env Render :
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_CALLBACK_URL` = `https://TON-APP.onrender.com/api/auth/google/callback`
+
+### Microsoft
+1. https://portal.azure.com → App registrations → New registration
+2. Redirect URI (Web) :
+   - `http://localhost:4000/api/auth/microsoft/callback`
+   - `https://TON-APP.onrender.com/api/auth/microsoft/callback`
+3. Certificates & secrets → New client secret
+4. API permissions : Microsoft Graph `User.Read` (+ admin consent si besoin)
+5. Env Render :
+   - `MICROSOFT_CLIENT_ID` (Application ID)
+   - `MICROSOFT_CLIENT_SECRET`
+   - `MICROSOFT_CALLBACK_URL` = `https://TON-APP.onrender.com/api/auth/microsoft/callback`
+
+Sur login/register : choisir le rôle (intérimaire / entreprise) puis Google ou Microsoft.
