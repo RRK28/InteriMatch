@@ -68,7 +68,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"{{ $json.missions[0].email }}\" }],\n  \"subject\": \"Relance — mission encore ouverte sur InteriMatch\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Tu as <strong>{{ $json.count }}</strong> mission(s) ouverte(s) (ex. {{ $json.missions[0].titre }}).</p><p>Connecte-toi pour mettre à jour le statut ou accepter un candidat.</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Relance — mission encore ouverte sur InteriMatch\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Tu as <strong>{{ $json.count }}</strong> mission(s) ouverte(s) (ex. {{ $json.missions[0].titre }}).</p><p>Connecte-toi pour mettre à jour le statut ou accepter un candidat.</p><p><em>Destinataire de test : leglitcher692@gmail.com</em></p>\"\n}"
       },
       "id": "brevo1",
       "name": "Brevo — mail relance",

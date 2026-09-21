@@ -12,7 +12,10 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [240, 300],
+      "position": [
+        240,
+        300
+      ],
       "webhookId": "interimatch-notify"
     },
     {
@@ -31,7 +34,10 @@
       "name": "IF high match",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [480, 300]
+      "position": [
+        480,
+        300
+      ]
     },
     {
       "parameters": {
@@ -40,19 +46,28 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"{{ $env.BREVO_SENDER_EMAIL }}\" },\n  \"to\": [{ \"email\": \"{{ ($json.body.matches || $json.matches)[0].email }}\" }],\n  \"subject\": \"Nouveau match > 80% — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une mission <strong>{{ $json.body.mission || $json.mission }}</strong> correspond à ton profil (score ≥ 80%).</p><p>Connecte-toi sur InteriMatch pour candidater.</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Nouveau match > 80% — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une mission <strong>{{ $json.body.mission || $json.mission }}</strong> correspond à un profil (score ≥ 80%).</p><p>Connecte-toi sur InteriMatch.</p>\"\n}"
       },
       "id": "brevo1",
       "name": "Brevo — mail match ≥80%",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [720, 200]
+      "position": [
+        720,
+        200
+      ]
     },
     {
       "parameters": {
@@ -61,33 +76,64 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "api-key",
+              "value": "={{ $env.BREVO_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"{{ $env.BREVO_SENDER_EMAIL }}\" },\n  \"to\": [{ \"email\": \"{{ $json.body.email || $json.email }}\" }],\n  \"subject\": \"Candidature reçue — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Ta candidature pour <strong>{{ $json.body.mission || $json.mission }}</strong> est bien enregistrée (score {{ $json.body.score || $json.score }}/100).</p><p>L’entreprise te répondra sur InteriMatch.</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"Candidature reçue — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une candidature pour <strong>{{ $json.body.mission || $json.mission }}</strong> est enregistrée (score {{ $json.body.score || $json.score }}/100).</p>\"\n}"
       },
       "id": "brevo2",
       "name": "Brevo — conf candidature",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [720, 400]
+      "position": [
+        720,
+        400
+      ]
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "IF high match", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "IF high match",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "IF high match": {
       "main": [
-        [{ "node": "Brevo — mail match ≥80%", "type": "main", "index": 0 }],
-        [{ "node": "Brevo — conf candidature", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Brevo — mail match ≥80%",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Brevo — conf candidature",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
+  "settings": {
+    "executionOrder": "v1"
+  },
   "versionId": "3"
 }
