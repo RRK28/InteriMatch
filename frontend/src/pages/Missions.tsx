@@ -25,7 +25,9 @@ export default function Missions() {
 
   return (
     <section>
-      <h1>Missions ouvertes</h1>
+      <div className="page-banner">
+        <h1>Missions ouvertes</h1>
+      </div>
       <p className="meta">Annonces BTP — matching selon ton profil une fois connecté.</p>
       {err && <p className="err">{err}</p>}
       <div className="grid">

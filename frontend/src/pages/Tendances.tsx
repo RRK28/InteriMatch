@@ -10,7 +10,9 @@ export default function Tendances() {
 
   return (
     <section>
-      <h1>Tendances marché BTP</h1>
+      <div className="page-banner">
+        <h1>Tendances marché BTP</h1>
+      </div>
       <p className="meta">
         Agrégats issus des offres France Travail (intérim MIS) après nettoyage CLI — utiles pour
         cibler les métiers / zones en tension.
