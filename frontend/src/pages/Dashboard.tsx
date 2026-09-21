@@ -7,10 +7,16 @@ export default function Dashboard() {
   const { user, loading } = useAuth();
   const [data, setData] = useState<any[]>([]);
   const [matches, setMatches] = useState<any[]>([]);
+  const [err, setErr] = useState('');
+
+  async function refresh() {
+    const missions = await api('/api/missions/mine');
+    setData(missions);
+  }
 
   useEffect(() => {
     if (!user) return;
-    api('/api/missions/mine').then(setData).catch(console.error);
+    refresh().catch(console.error);
     if (user.role === 'INTERIMAIRE') {
       api('/api/matching/for-me').then(setMatches).catch(console.error);
     }
@@ -24,8 +30,20 @@ export default function Dashboard() {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });
-    const refreshed = await api('/api/missions/mine');
-    setData(refreshed);
+    await refresh();
+  }
+
+  async function setCandStatus(missionId: string, candId: string, status: string) {
+    setErr('');
+    try {
+      await api(`/api/missions/${missionId}/candidatures/${candId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      await refresh();
+    } catch (e: any) {
+      setErr(e.message);
+    }
   }
 
   return (
@@ -34,6 +52,7 @@ export default function Dashboard() {
       <p className="meta">
         Connecté en tant que {user.role.toLowerCase()} ({user.email})
       </p>
+      {err && <p className="err">{err}</p>}
 
       {user.role === 'ENTREPRISE' && (
         <>
@@ -52,7 +71,70 @@ export default function Dashboard() {
                 <p className="meta">
                   {m._count?.candidatures ?? m.candidatures?.length ?? 0} candidature(s)
                 </p>
+
+                {m.candidatures?.length > 0 && (
+                  <div style={{ marginTop: '0.75rem' }}>
+                    <p className="meta" style={{ marginBottom: '0.4rem' }}>
+                      Candidats :
+                    </p>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem' }}>
+                      {m.candidatures.map((c: any) => {
+                        const p = c.interim?.interim;
+                        return (
+                          <li key={c.id} style={{ marginBottom: '0.55rem' }}>
+                            <strong>
+                              {p ? `${p.prenom} ${p.nom}` : 'Profil incomplet'}
+                            </strong>{' '}
+                            <span className="meta">({c.interim?.email})</span>
+                            <br />
+                            <span className="meta">
+                              score {c.score}/100 · {c.status}
+                              {p?.ville ? ` · ${p.ville}` : ''}
+                              {p?.metiers?.length ? ` · ${p.metiers.join(', ')}` : ''}
+                            </span>
+                            {p?.competences?.length > 0 && (
+                              <>
+                                <br />
+                                <span className="meta">compétences : {p.competences.join(', ')}</span>
+                              </>
+                            )}
+                            {c.message && (
+                              <>
+                                <br />
+                                <span className="meta">« {c.message} »</span>
+                              </>
+                            )}
+                            {c.status === 'EN_ATTENTE' && m.status === 'OUVERTE' && (
+                              <div className="cta-row" style={{ marginTop: '0.35rem' }}>
+                                <button
+                                  type="button"
+                                  className="btn"
+                                  style={{ padding: '0.35rem 0.7rem', fontSize: '0.85rem' }}
+                                  onClick={() => setCandStatus(m.id, c.id, 'ACCEPTEE')}
+                                >
+                                  Accepter
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn ghost"
+                                  style={{ padding: '0.35rem 0.7rem', fontSize: '0.85rem' }}
+                                  onClick={() => setCandStatus(m.id, c.id, 'REFUSEE')}
+                                >
+                                  Refuser
+                                </button>
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
                 <div className="cta-row" style={{ marginTop: '0.5rem' }}>
+                  <Link className="btn secondary" to={`/missions/${m.id}`} style={{ padding: '0.35rem 0.7rem' }}>
+                    Détail
+                  </Link>
                   {m.status === 'OUVERTE' && (
                     <button className="btn ghost" type="button" onClick={() => setStatus(m.id, 'POURVUE')}>
                       Marquer pourvue
@@ -76,7 +158,13 @@ export default function Dashboard() {
           <div className="grid">
             {matches.slice(0, 8).map((row) => (
               <article key={row.mission.id} className="mission">
-                <div className="score">{row.score}%</div>
+                <div className="score">
+                  {row.score}
+                  <span className="meta" style={{ fontSize: '0.9rem' }}>
+                    {' '}
+                    /100
+                  </span>
+                </div>
                 <h3>
                   <Link to={`/missions/${row.mission.id}`}>{row.mission.titre}</Link>
                 </h3>
@@ -91,7 +179,7 @@ export default function Dashboard() {
             {data.map((c: any) => (
               <li key={c.id}>
                 <Link to={`/missions/${c.missionId}`}>{c.mission?.titre || c.missionId}</Link> — score{' '}
-                {c.score} — {c.status}
+                {c.score}/100 — {c.status}
               </li>
             ))}
           </ul>

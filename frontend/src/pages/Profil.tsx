@@ -118,6 +118,10 @@ export default function Profil() {
             <input name="codePostal" defaultValue={profil?.codePostal || ''} />
           </label>
           <label>
+            Rayon de mobilité (km)
+            <input name="rayonKm" type="number" min={5} max={200} defaultValue={profil?.rayonKm ?? 30} />
+          </label>
+          <label>
             Métiers (virgules)
             <input name="metiers" defaultValue={(profil?.metiers || []).join(', ')} placeholder="macon, coffreur" />
           </label>

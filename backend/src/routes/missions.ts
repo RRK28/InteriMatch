@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { prisma } from '../services/db';
-import { requireAuth, requireRole } from '../middleware/auth';
+import { requireAuth, requireRole, optionalAuth } from '../middleware/auth';
 import { EPI_PAR_METIER } from './profiles';
+import { scoreMatch } from '../services/matching';
 
 const router = Router();
 
@@ -12,20 +13,14 @@ function daysBetween(a: Date, b: Date) {
   return Math.ceil((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
+// listing public = missions ouvertes uniquement (SEO)
 router.get('/', async (req, res) => {
-  const status = req.query.status as string | undefined;
-  const where: any = {};
-  if (status) where.status = status;
-  // listing public des missions ouvertes (seo)
-  if (!req.headers.authorization) {
-    where.status = 'OUVERTE';
-  }
-
+  const status = (req.query.status as string) || 'OUVERTE';
   const missions = await prisma.mission.findMany({
-    where,
+    where: { status: status as any },
     orderBy: { createdAt: 'desc' },
     include: {
-      entreprise: { select: { entreprise: true, email: true } },
+      entreprise: { select: { entreprise: { select: { raisonSociale: true, ville: true } } } },
       _count: { select: { candidatures: true } },
     },
     take: 50,
@@ -38,28 +33,54 @@ router.get('/mine', requireAuth, async (req, res) => {
     const missions = await prisma.mission.findMany({
       where: { entrepriseId: req.user!.id },
       orderBy: { createdAt: 'desc' },
-      include: { candidatures: true, _count: { select: { candidatures: true } } },
+      include: {
+        candidatures: {
+          orderBy: { score: 'desc' },
+          include: {
+            interim: { select: { email: true, interim: true } },
+          },
+        },
+        _count: { select: { candidatures: true } },
+      },
     });
     return res.json(missions);
   }
-  // interim: missions où il a candidaté
   const cands = await prisma.candidature.findMany({
     where: { interimId: req.user!.id },
     include: { mission: true },
+    orderBy: { createdAt: 'desc' },
   });
   res.json(cands);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   const mission = await prisma.mission.findUnique({
     where: { id: req.params.id },
     include: {
-      entreprise: { select: { entreprise: true } },
-      candidatures: { include: { interim: { select: { interim: true, email: true } } } },
+      entreprise: { select: { entreprise: { select: { raisonSociale: true, ville: true } } } },
+      candidatures: {
+        orderBy: { score: 'desc' },
+        include: { interim: { select: { interim: true, email: true } } },
+      },
     },
   });
   if (!mission) return res.status(404).json({ error: 'introuvable' });
-  res.json(mission);
+
+  const isOwner = req.user?.role === 'ENTREPRISE' && req.user.id === mission.entrepriseId;
+  const myCand = req.user?.role === 'INTERIMAIRE'
+    ? mission.candidatures.find((c) => c.interimId === req.user!.id)
+    : null;
+
+  // pas de fuite PII : candidatures réservées au propriétaire
+  const { candidatures, ...rest } = mission;
+  res.json({
+    ...rest,
+    candidatures: isOwner ? candidatures : undefined,
+    maCandidature: myCand
+      ? { id: myCand.id, score: myCand.score, status: myCand.status, message: myCand.message }
+      : null,
+    nbCandidatures: candidatures.length,
+  });
 });
 
 router.post('/', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
@@ -121,16 +142,50 @@ router.patch('/:id/status', requireAuth, requireRole('ENTREPRISE'), async (req, 
   res.json(updated);
 });
 
-// candidater
+router.patch('/:id/candidatures/:candId', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
+  const mission = await prisma.mission.findFirst({
+    where: { id: req.params.id, entrepriseId: req.user!.id },
+  });
+  if (!mission) return res.status(404).json({ error: 'introuvable' });
+
+  const status = req.body.status;
+  if (!['ACCEPTEE', 'REFUSEE', 'EN_ATTENTE'].includes(status)) {
+    return res.status(400).json({ error: 'status invalide' });
+  }
+
+  const cand = await prisma.candidature.findFirst({
+    where: { id: req.params.candId, missionId: mission.id },
+  });
+  if (!cand) return res.status(404).json({ error: 'candidature introuvable' });
+
+  const updated = await prisma.candidature.update({
+    where: { id: cand.id },
+    data: { status },
+  });
+
+  if (status === 'ACCEPTEE') {
+    // mission pourvue + on refuse les autres en attente
+    await prisma.mission.update({ where: { id: mission.id }, data: { status: 'POURVUE' } });
+    await prisma.candidature.updateMany({
+      where: { missionId: mission.id, id: { not: cand.id }, status: 'EN_ATTENTE' },
+      data: { status: 'REFUSEE' },
+    });
+  }
+
+  res.json(updated);
+});
+
 router.post('/:id/candidater', requireAuth, requireRole('INTERIMAIRE'), async (req, res) => {
   const mission = await prisma.mission.findUnique({ where: { id: req.params.id } });
   if (!mission || mission.status !== 'OUVERTE') {
     return res.status(400).json({ error: 'mission non disponible' });
   }
 
-  const { scoreMatch } = await import('../services/matching');
   const profil = await prisma.interimProfile.findUnique({ where: { userId: req.user!.id } });
   if (!profil) return res.status(400).json({ error: 'complète ton profil d abord' });
+  if (!profil.metiers.length) {
+    return res.status(400).json({ error: 'ajoute au moins un métier dans ton profil' });
+  }
 
   const { score } = scoreMatch(mission, profil);
 
@@ -144,7 +199,6 @@ router.post('/:id/candidater', requireAuth, requireRole('INTERIMAIRE'), async (r
       },
     });
 
-    // webhook n8n si configuré (confirmation postulation)
     if (process.env.N8N_WEBHOOK_URL) {
       fetch(process.env.N8N_WEBHOOK_URL, {
         method: 'POST',

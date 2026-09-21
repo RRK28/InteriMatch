@@ -14,7 +14,7 @@ export type ProfileInput = {
   competences: string[];
   ville?: string | null;
   codePostal?: string | null;
-  rayonKm?: number;
+  rayonKm?: number | null;
   dispoDebut?: Date | null;
   dispoFin?: Date | null;
 };
@@ -55,15 +55,19 @@ export function scoreMatch(mission: MissionInput, profil: ProfileInput) {
   }
   score += details.competences;
 
-  // zone (15) — même dept = ok pour le POC
+  // zone (15) — même dept / même ville ; sinon pénalité si rayon petit
   const dM = dept(mission.codePostal);
   const dP = dept(profil.codePostal);
+  const rayon = profil.rayonKm ?? 30;
   if (dM && dP && dM === dP) {
     details.zone = 15;
   } else if (profil.ville && norm(profil.ville) === norm(mission.ville)) {
     details.zone = 12;
+  } else if (rayon >= 80) {
+    // mobile longue distance → un peu de points
+    details.zone = 6;
   } else {
-    details.zone = 3; // un peu de base sinon tout le monde est à 0
+    details.zone = 2;
   }
   score += details.zone;
 

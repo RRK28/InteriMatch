@@ -38,8 +38,11 @@ function Nav() {
 export default function App() {
   return (
     <div className="layout">
+      <a href="#main" className="sr-only">
+        Aller au contenu
+      </a>
       <Nav />
-      <main>
+      <main id="main">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

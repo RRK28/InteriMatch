@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { prisma } from '../services/db';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, rateLimit } from '../middleware/auth';
 
 const router = Router();
 
@@ -12,13 +12,12 @@ const registerSchema = z.object({
   password: z.string().min(6),
   role: z.enum(['ENTREPRISE', 'INTERIMAIRE']),
   consentRgpd: z.literal(true),
-  // profil minimal selon role
   raisonSociale: z.string().optional(),
   prenom: z.string().optional(),
   nom: z.string().optional(),
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', rateLimit(10, 60_000), async (req, res) => {
   const parsed = registerSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: 'données invalides', details: parsed.error.flatten() });
@@ -54,7 +53,7 @@ router.post('/register', async (req, res) => {
   res.status(201).json({ token, user: { id: user.id, email: user.email, role: user.role } });
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', rateLimit(15, 60_000), async (req, res) => {
   const email = String(req.body.email || '').toLowerCase();
   const password = String(req.body.password || '');
   if (!email || !password) return res.status(400).json({ error: 'email/mdp requis' });
@@ -84,7 +83,6 @@ router.get('/me', requireAuth, async (req, res) => {
   });
 });
 
-// suppression compte RGPD
 router.delete('/me', requireAuth, async (req, res) => {
   await prisma.user.delete({ where: { id: req.user!.id } });
   res.json({ ok: true });

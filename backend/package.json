@@ -9,6 +9,7 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "db:sync-tendances": "tsx scripts/sync-tendances.ts",
     "test": "jest --coverage",
     "test:unit": "jest --coverage --testPathPattern=unit"
   },

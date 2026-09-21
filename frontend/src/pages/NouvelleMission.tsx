@@ -8,28 +8,42 @@ export default function NouvelleMission() {
   const nav = useNavigate();
   const [err, setErr] = useState('');
   const [sugg, setSugg] = useState<string[]>([]);
+  const [comps, setComps] = useState('');
+  const [epi, setEpi] = useState<string[]>([]);
+  const [metier, setMetier] = useState('macon');
 
   if (!user || user.role !== 'ENTREPRISE') {
     return <p className="err">réservé aux entreprises</p>;
   }
 
-  async function onMetierBlur(metier: string) {
-    if (!metier) return;
+  async function onMetierChange(value: string) {
+    setMetier(value);
     try {
-      const data = await api<{ competencesSuggerees: string[] }>(
-        `/api/tendances/suggestions/${encodeURIComponent(metier)}`
-      );
-      setSugg(data.competencesSuggerees || []);
+      const [sug, epiRes] = await Promise.all([
+        api<{ competencesSuggerees: string[] }>(`/api/tendances/suggestions/${encodeURIComponent(value)}`),
+        api<{ epi: string[] }>(`/api/profiles/epi/${encodeURIComponent(value)}`),
+      ]);
+      setSugg(sug.competencesSuggerees || []);
+      setEpi(epiRes.epi || []);
     } catch {
       /* ignore */
     }
+  }
+
+  function addComp(c: string) {
+    const list = comps
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (!list.includes(c)) list.push(c);
+    setComps(list.join(', '));
   }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErr('');
     const fd = new FormData(e.currentTarget);
-    const competences = String(fd.get('competences') || '')
+    const competences = comps
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
@@ -39,7 +53,7 @@ export default function NouvelleMission() {
         body: JSON.stringify({
           titre: fd.get('titre'),
           description: fd.get('description'),
-          metier: fd.get('metier'),
+          metier,
           competences,
           ville: fd.get('ville'),
           codePostal: fd.get('codePostal'),
@@ -57,6 +71,10 @@ export default function NouvelleMission() {
   return (
     <section>
       <h1>Nouvelle mission</h1>
+      <p className="meta">
+        Mentions contrat : titre, dates, lieu, rémunération et compétences seront reprises sur la
+        fiche (durée max ~18 mois contrôlée).
+      </p>
       <form className="stack" onSubmit={onSubmit} style={{ maxWidth: 520 }}>
         <label>
           Titre
@@ -64,7 +82,13 @@ export default function NouvelleMission() {
         </label>
         <label>
           Métier
-          <select name="metier" required onBlur={(e) => onMetierBlur(e.target.value)}>
+          <select
+            name="metier"
+            required
+            value={metier}
+            onChange={(e) => onMetierChange(e.target.value)}
+            onFocus={() => onMetierChange(metier)}
+          >
             <option value="macon">Maçon</option>
             <option value="coffreur">Coffreur</option>
             <option value="electricien">Électricien</option>
@@ -72,14 +96,39 @@ export default function NouvelleMission() {
             <option value="charpentier">Charpentier</option>
           </select>
         </label>
+        {epi.length > 0 && (
+          <div className="epi-box" role="note">
+            <strong>EPI prévus :</strong> {epi.join(', ')}
+          </div>
+        )}
         {sugg.length > 0 && (
-          <p className="meta">
-            Suggestions (France Travail / tendances) : {sugg.join(', ')}
-          </p>
+          <div>
+            <p className="meta" style={{ marginBottom: '0.35rem' }}>
+              Suggestions compétences (tendances FT) — clique pour ajouter :
+            </p>
+            <div className="cta-row">
+              {sugg.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className="btn ghost"
+                  style={{ padding: '0.3rem 0.65rem', fontSize: '0.85rem' }}
+                  onClick={() => addComp(c)}
+                >
+                  + {c}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
         <label>
           Compétences (séparées par virgule)
-          <input name="competences" placeholder="coffrage, béton" />
+          <input
+            name="competences"
+            value={comps}
+            onChange={(e) => setComps(e.target.value)}
+            placeholder="coffrage, béton"
+          />
         </label>
         <label>
           Description
