@@ -13,7 +13,7 @@ import matchRoutes from './routes/matching';
 import tendanceRoutes from './routes/tendances';
 import webhookRoutes from './routes/webhooks';
 import { configurePassport, passport } from './services/passport';
-import { isMongoReady } from './services/mongo';
+import { ensureMongo, getMongoStatus } from './services/mongo';
 import { prisma } from './services/db';
 
 configurePassport();
@@ -42,11 +42,17 @@ app.get('/api/health', async (_req, res) => {
   } catch {
     postgres = false;
   }
+  if (!getMongoStatus().ready) {
+    await ensureMongo();
+  }
+  const mongo = getMongoStatus();
   res.json({
     ok: true,
     service: 'interimatch',
     postgres,
-    mongo: isMongoReady(),
+    mongo: mongo.ready,
+    mongoConfigured: mongo.configured,
+    mongoError: mongo.lastError,
     n8nConfigured: Boolean(process.env.N8N_WEBHOOK_URL),
   });
 });
