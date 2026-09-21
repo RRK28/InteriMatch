@@ -13,6 +13,8 @@ import matchRoutes from './routes/matching';
 import tendanceRoutes from './routes/tendances';
 import webhookRoutes from './routes/webhooks';
 import { configurePassport, passport } from './services/passport';
+import { isMongoReady } from './services/mongo';
+import { prisma } from './services/db';
 
 configurePassport();
 
@@ -32,8 +34,21 @@ app.use(
 app.use(express.json({ limit: '1mb' }));
 app.use(passport.initialize());
 
-app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, service: 'interimatch' });
+app.get('/api/health', async (_req, res) => {
+  let postgres = false;
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    postgres = true;
+  } catch {
+    postgres = false;
+  }
+  res.json({
+    ok: true,
+    service: 'interimatch',
+    postgres,
+    mongo: isMongoReady(),
+    n8nConfigured: Boolean(process.env.N8N_WEBHOOK_URL),
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -56,7 +71,6 @@ app.get('/sitemap.xml', (_req, res) => {
 });
 
 // prod : front Vite build servi par Express (une seule URL Render)
-// __dirname = backend/dist/src → remonter à la racine du repo
 const frontDist = path.resolve(__dirname, '../../../frontend/dist');
 const frontAlt = path.resolve(process.cwd(), '../frontend/dist');
 const staticDir = fs.existsSync(frontDist) ? frontDist : frontAlt;

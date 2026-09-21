@@ -3,6 +3,7 @@ import { prisma } from '../services/db';
 import { requireAuth, requireRole, optionalAuth } from '../middleware/auth';
 import { EPI_PAR_METIER } from './profiles';
 import { scoreMatch } from '../services/matching';
+import { notifyN8n } from '../services/n8n';
 
 const router = Router();
 
@@ -249,18 +250,13 @@ router.post('/:id/candidater', requireAuth, requireRole('INTERIMAIRE'), async (r
       },
     });
 
-    if (process.env.N8N_WEBHOOK_URL) {
-      fetch(process.env.N8N_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'candidature',
-          email: req.user!.email,
-          mission: mission.titre,
-          score,
-        }),
-      }).catch(() => {});
-    }
+    await notifyN8n({
+      type: 'candidature',
+      email: req.user!.email,
+      mission: mission.titre,
+      missionId: mission.id,
+      score,
+    });
 
     res.status(201).json(cand);
   } catch {

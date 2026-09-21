@@ -49,8 +49,25 @@ Comptes seed :
 ## Avant la soutenance
 Ouvre l’URL **2–3 min avant** (cold start free ~30–60s).
 
-## Mongo (optionnel)
-Sans `MONGO_URL` l’app marche (logs matching skippés). Atlas free si besoin.
+## Mongo (requis pour logs matching + preuve n8n)
+
+### Local
+`docker compose up -d` → `MONGO_URL=mongodb://localhost:27017/interimatch`
+
+### Prod (Atlas free — 5 min)
+1. https://cloud.mongodb.com → **Build a Database** → **M0 Free** → région proche (Frankfurt)
+2. Database Access → user `interimatch` + mot de passe
+3. Network Access → **Allow Access from Anywhere** `0.0.0.0/0` (Render free n’a pas d’IP fixe)
+4. Connect → Drivers → copie l’URI :
+   `mongodb+srv://interimatch:MOTDEPASSE@cluster0.xxxxx.mongodb.net/interimatch?retryWrites=true&w=majority`
+5. Render → Environment → `MONGO_URL` = cette URI → **Manual Deploy**
+
+Vérif : `GET /api/health` → `"mongo": true`  
+Démo logs : login entreprise puis `GET /api/matching/logs` et `GET /api/matching/automations`
+
+## n8n
+Voir `Workflow/README.md` (mails **Brevo**, comme le CDC). Sur Render : `N8N_WEBHOOK_URL` + `WEBHOOK_SECRET`.
+La clé Brevo se configure **dans n8n** (`BREVO_API_KEY`), jamais dans le repo Git.
 
 ## OAuth Google / Microsoft (Passport)
 

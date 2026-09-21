@@ -1,5 +1,5 @@
 {
-  "name": "InteriMatch — relance missions ouvertes",
+  "name": "InteriMatch — relance missions ouvertes (Brevo)",
   "nodes": [
     {
       "parameters": {
@@ -16,10 +16,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://localhost:4000/api/webhooks/relance-missions",
+        "url": "={{ $env.INTERIMATCH_API_URL }}/api/webhooks/relance-missions",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{ "name": "x-webhook-secret", "value": "change-me" }]
+          "parameters": [
+            { "name": "x-webhook-secret", "value": "={{ $env.WEBHOOK_SECRET }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -28,18 +31,28 @@
       "id": "http1",
       "name": "API relance",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4,
       "position": [480, 300]
     },
     {
       "parameters": {
-        "webhookUri": "https://discord.com/api/webhooks/XXXX/YYYY",
-        "text": "=Relance : {{$json.count}} mission(s) ouvertes depuis > 7j"
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"{{ $env.BREVO_SENDER_EMAIL }}\" },\n  \"to\": [{ \"email\": \"{{ $json.missions[0].email }}\" }],\n  \"subject\": \"Relance — mission encore ouverte sur InteriMatch\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Tu as <strong>{{ $json.count }}</strong> mission(s) ouverte(s) depuis plus de 7 jours (ex. {{ $json.missions[0].titre }}).</p><p>Connecte-toi pour mettre à jour le statut ou accepter un candidat.</p>\"\n}"
       },
-      "id": "discord1",
-      "name": "Discord notif",
-      "type": "n8n-nodes-base.discord",
-      "typeVersion": 1,
+      "id": "brevo1",
+      "name": "Brevo — mail relance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
       "position": [720, 300]
     }
   ],
@@ -48,10 +61,10 @@
       "main": [[{ "node": "API relance", "type": "main", "index": 0 }]]
     },
     "API relance": {
-      "main": [[{ "node": "Discord notif", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Brevo — mail relance", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
-  "settings": {},
-  "versionId": "1"
+  "settings": { "executionOrder": "v1" },
+  "versionId": "3"
 }

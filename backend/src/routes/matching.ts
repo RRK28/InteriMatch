@@ -2,9 +2,21 @@ import { Router } from 'express';
 import { prisma } from '../services/db';
 import { requireAuth, requireRole } from '../middleware/auth';
 import { scoreMatch } from '../services/matching';
-import { MatchingLog } from '../services/mongo';
+import { AutomationEvent, isMongoReady, MatchingLog } from '../services/mongo';
+import { notifyN8n } from '../services/n8n';
 
 const router = Router();
+
+async function logMatchingRows(
+  rows: { missionId: string; interimId: string; score: number; details: unknown }[]
+) {
+  if (!rows.length || !isMongoReady()) return;
+  try {
+    await MatchingLog.insertMany(rows);
+  } catch {
+    // mongo down = pas grave
+  }
+}
 
 // pour une mission: ranking des intérimaires
 router.get('/mission/:id', requireAuth, requireRole('ENTREPRISE'), async (req, res) => {
@@ -31,32 +43,23 @@ router.get('/mission/:id', requireAuth, requireRole('ENTREPRISE'), async (req, r
     })
     .sort((a, b) => b.score - a.score);
 
-  // log mongo (best effort)
-  try {
-    await MatchingLog.insertMany(
-      ranked.slice(0, 20).map((r) => ({
-        missionId: mission.id,
-        interimId: r.interimId,
-        score: r.score,
-        details: r.details,
-      }))
-    );
-  } catch {
-    // mongo down = pas grave
-  }
+  await logMatchingRows(
+    ranked.slice(0, 20).map((r) => ({
+      missionId: mission.id,
+      interimId: r.interimId,
+      score: r.score,
+      details: r.details,
+    }))
+  );
 
-  // notif n8n si match > 80
   const hot = ranked.filter((r) => r.score >= 80);
-  if (hot.length && process.env.N8N_WEBHOOK_URL) {
-    fetch(process.env.N8N_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'high_match',
-        mission: mission.titre,
-        matches: hot.map((h) => ({ email: h.email, score: h.score })),
-      }),
-    }).catch(() => {});
+  if (hot.length) {
+    await notifyN8n({
+      type: 'high_match',
+      mission: mission.titre,
+      missionId: mission.id,
+      matches: hot.map((h) => ({ email: h.email, score: h.score })),
+    });
   }
 
   res.json(ranked);
@@ -72,7 +75,34 @@ router.get('/for-me', requireAuth, requireRole('INTERIMAIRE'), async (req, res) 
     .map((m) => ({ mission: m, ...scoreMatch(m, profil) }))
     .sort((a, b) => b.score - a.score);
 
+  await logMatchingRows(
+    ranked.slice(0, 20).map((r) => ({
+      missionId: r.mission.id,
+      interimId: req.user!.id,
+      score: r.score,
+      details: r.details,
+    }))
+  );
+
   res.json(ranked);
+});
+
+/** Derniers logs de matching (preuve Mongo en soutenance) */
+router.get('/logs', requireAuth, requireRole('ENTREPRISE'), async (_req, res) => {
+  if (!isMongoReady()) {
+    return res.status(503).json({ error: 'mongo indisponible', logs: [] });
+  }
+  const logs = await MatchingLog.find().sort({ createdAt: -1 }).limit(50).lean();
+  res.json({ count: logs.length, logs });
+});
+
+/** Événements n8n archivés (même sans webhook externe) */
+router.get('/automations', requireAuth, requireRole('ENTREPRISE'), async (_req, res) => {
+  if (!isMongoReady()) {
+    return res.status(503).json({ error: 'mongo indisponible', events: [] });
+  }
+  const events = await AutomationEvent.find().sort({ createdAt: -1 }).limit(50).lean();
+  res.json({ count: events.length, events });
 });
 
 export default router;

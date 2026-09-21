@@ -1,5 +1,5 @@
 {
-  "name": "InteriMatch — notification match / candidature",
+  "name": "InteriMatch — notification match / candidature (Brevo)",
   "nodes": [
     {
       "parameters": {
@@ -12,14 +12,15 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [260, 300]
+      "position": [240, 300],
+      "webhookId": "interimatch-notify"
     },
     {
       "parameters": {
         "conditions": {
           "string": [
             {
-              "value1": "={{$json.body.type}}",
+              "value1": "={{ $json.body.type || $json.type }}",
               "operation": "equals",
               "value2": "high_match"
             }
@@ -39,19 +40,19 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "api-key", "value": "BREVO_API_KEY" },
+            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"noreply@interimatch.local\" },\n  \"to\": [{ \"email\": \"{{$json.body.matches[0].email}}\" }],\n  \"subject\": \"Nouveau match > 80% — {{$json.body.mission}}\",\n  \"htmlContent\": \"<p>Une mission correspond à ton profil (score élevé).</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"{{ $env.BREVO_SENDER_EMAIL }}\" },\n  \"to\": [{ \"email\": \"{{ ($json.body.matches || $json.matches)[0].email }}\" }],\n  \"subject\": \"Nouveau match > 80% — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Une mission <strong>{{ $json.body.mission || $json.mission }}</strong> correspond à ton profil (score ≥ 80%).</p><p>Connecte-toi sur InteriMatch pour candidater.</p>\"\n}"
       },
       "id": "brevo1",
-      "name": "Brevo mail match",
+      "name": "Brevo — mail match ≥80%",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [720, 220]
+      "typeVersion": 4,
+      "position": [720, 200]
     },
     {
       "parameters": {
@@ -60,18 +61,18 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "api-key", "value": "BREVO_API_KEY" },
+            { "name": "api-key", "value": "={{ $env.BREVO_API_KEY }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"noreply@interimatch.local\" },\n  \"to\": [{ \"email\": \"{{$json.body.email}}\" }],\n  \"subject\": \"Candidature reçue — {{$json.body.mission}}\",\n  \"htmlContent\": \"<p>Ta candidature a bien été enregistrée (score {{$json.body.score}}).</p>\"\n}"
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"{{ $env.BREVO_SENDER_EMAIL }}\" },\n  \"to\": [{ \"email\": \"{{ $json.body.email || $json.email }}\" }],\n  \"subject\": \"Candidature reçue — {{ $json.body.mission || $json.mission }}\",\n  \"htmlContent\": \"<p>Bonjour,</p><p>Ta candidature pour <strong>{{ $json.body.mission || $json.mission }}</strong> est bien enregistrée (score {{ $json.body.score || $json.score }}/100).</p><p>L’entreprise te répondra sur InteriMatch.</p>\"\n}"
       },
       "id": "brevo2",
-      "name": "Brevo conf candidature",
+      "name": "Brevo — conf candidature",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4,
       "position": [720, 400]
     }
   ],
@@ -81,12 +82,12 @@
     },
     "IF high match": {
       "main": [
-        [{ "node": "Brevo mail match", "type": "main", "index": 0 }],
-        [{ "node": "Brevo conf candidature", "type": "main", "index": 0 }]
+        [{ "node": "Brevo — mail match ≥80%", "type": "main", "index": 0 }],
+        [{ "node": "Brevo — conf candidature", "type": "main", "index": 0 }]
       ]
     }
   },
   "active": false,
-  "settings": {},
-  "versionId": "1"
+  "settings": { "executionOrder": "v1" },
+  "versionId": "3"
 }

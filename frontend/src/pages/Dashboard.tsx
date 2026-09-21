@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [data, setData] = useState<any[]>([]);
   const [matches, setMatches] = useState<any[]>([]);
   const [err, setErr] = useState('');
+  const [tech, setTech] = useState<{ logs: any[]; events: any[]; mongoOk: boolean } | null>(null);
 
   async function refresh() {
     const missions = await api('/api/missions/mine');
@@ -19,6 +20,18 @@ export default function Dashboard() {
     refresh().catch(console.error);
     if (user.role === 'INTERIMAIRE') {
       api('/api/matching/for-me').then(setMatches).catch(console.error);
+    }
+    if (user.role === 'ENTREPRISE') {
+      Promise.all([
+        api('/api/matching/logs').catch(() => ({ logs: [], error: true })),
+        api('/api/matching/automations').catch(() => ({ events: [], error: true })),
+      ]).then(([logs, autos]) => {
+        setTech({
+          logs: logs.logs || [],
+          events: autos.events || [],
+          mongoOk: !logs.error,
+        });
+      });
     }
   }, [user]);
 
@@ -154,6 +167,21 @@ export default function Dashboard() {
               </article>
             ))}
           </div>
+
+          {tech && (
+            <div style={{ marginTop: '2.5rem' }}>
+              <h2>Logs techniques (Mongo / n8n)</h2>
+              <p className="meta">
+                Mongo {tech.mongoOk ? 'connecté' : 'indisponible'} · {tech.logs.length} matching log(s) ·{' '}
+                {tech.events.length} événement(s) automation
+              </p>
+              {tech.events.slice(0, 5).map((e) => (
+                <p key={e._id} className="meta">
+                  [{e.type}] {e.payload?.mission || '—'} · n8n={e.deliveredToN8n ? 'oui' : 'archive seule'}
+                </p>
+              ))}
+            </div>
+          )}
         </>
       )}
 

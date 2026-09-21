@@ -4,11 +4,15 @@
 import request from 'supertest';
 import app from '../src/app';
 import { prisma } from '../src/services/db';
+import { connectMongo, isMongoReady } from '../src/services/mongo';
+import mongoose from 'mongoose';
 
 let dbOk = false;
+let mongoOk = false;
 let entrepriseToken = '';
 let interimToken = '';
 let missionId = '';
+let createdMissionId = '';
 
 beforeAll(async () => {
   try {
@@ -18,17 +22,29 @@ beforeAll(async () => {
     dbOk = false;
     console.warn('DB indispo — tests parcours skippés');
   }
+
+  try {
+    await connectMongo();
+    mongoOk = isMongoReady();
+  } catch {
+    mongoOk = false;
+    console.warn('Mongo indispo — logs matching skippés');
+  }
 });
 
 afterAll(async () => {
   await prisma.$disconnect().catch(() => {});
+  await mongoose.disconnect().catch(() => {});
 });
 
 describe('parcours auth / mission / matching', () => {
-  it('health', async () => {
+  it('health expose postgres / mongo / n8n', async () => {
     const res = await request(app).get('/api/health');
     expect(res.status).toBe(200);
     expect(res.body.ok).toBe(true);
+    expect(typeof res.body.postgres).toBe('boolean');
+    expect(typeof res.body.mongo).toBe('boolean');
+    expect(typeof res.body.n8nConfigured).toBe('boolean');
   });
 
   it('login entreprise', async () => {
@@ -64,7 +80,7 @@ describe('parcours auth / mission / matching', () => {
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
-    missionId = res.body.find((m: any) => m.metier === 'macon')?.id || res.body[0].id;
+    missionId = res.body.find((m: { metier: string }) => m.metier === 'macon')?.id || res.body[0].id;
   });
 
   it('détail public sans fuite candidatures', async () => {
@@ -93,6 +109,30 @@ describe('parcours auth / mission / matching', () => {
     expect(Array.isArray(res.body)).toBe(true);
   });
 
+  it('matching mission + logs mongo', async () => {
+    if (!dbOk) return;
+    const res = await request(app)
+      .get(`/api/matching/mission/${missionId}`)
+      .set('Authorization', `Bearer ${entrepriseToken}`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body[0]).toHaveProperty('score');
+
+    if (!mongoOk) return;
+    const logs = await request(app)
+      .get('/api/matching/logs')
+      .set('Authorization', `Bearer ${entrepriseToken}`);
+    expect(logs.status).toBe(200);
+    expect(logs.body.count).toBeGreaterThan(0);
+
+    const autos = await request(app)
+      .get('/api/matching/automations')
+      .set('Authorization', `Bearer ${entrepriseToken}`);
+    expect(autos.status).toBe(200);
+    // high_match seulement si un score ≥ 80
+  });
+
   it('création mission entreprise', async () => {
     if (!dbOk) return;
     const debut = new Date();
@@ -115,5 +155,43 @@ describe('parcours auth / mission / matching', () => {
       });
     expect(res.status).toBe(201);
     expect(res.body.epiObligatoires?.length).toBeGreaterThan(0);
+    createdMissionId = res.body.id;
+  });
+
+  it('candidature interim déclenche automation', async () => {
+    if (!dbOk || !createdMissionId) return;
+    const res = await request(app)
+      .post(`/api/missions/${createdMissionId}/candidater`)
+      .set('Authorization', `Bearer ${interimToken}`)
+      .send({ message: 'dispo immédiatement' });
+    expect([201, 409]).toContain(res.status);
+
+    if (!mongoOk || res.status !== 201) return;
+    const autos = await request(app)
+      .get('/api/matching/automations')
+      .set('Authorization', `Bearer ${entrepriseToken}`);
+    expect(autos.status).toBe(200);
+    const types = (autos.body.events || []).map((e: { type: string }) => e.type);
+    expect(types).toContain('candidature');
+  });
+
+  it('webhook relance missions', async () => {
+    if (!dbOk) return;
+    const res = await request(app)
+      .post('/api/webhooks/relance-missions')
+      .set('x-webhook-secret', process.env.WEBHOOK_SECRET || 'change-me')
+      .send({ days: 0 });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('count');
+    expect(Array.isArray(res.body.missions)).toBe(true);
+  });
+
+  it('webhook refuse mauvais secret', async () => {
+    if (!dbOk || !process.env.WEBHOOK_SECRET) return;
+    const res = await request(app)
+      .post('/api/webhooks/relance-missions')
+      .set('x-webhook-secret', 'wrong-secret')
+      .send({ days: 7 });
+    expect(res.status).toBe(401);
   });
 });

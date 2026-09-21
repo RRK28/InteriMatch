@@ -8,9 +8,10 @@
    - login entreprise → créer mission → matching
    - login interim → dashboard scores → candidater
    - page tendances (données FT nettoyées)
-5. **Technique** — Express/TS + React/TS, Postgres + Mongo logs, CLI, n8n×2
+   - dashboard entreprise → bloc **Logs techniques** (Mongo + automations n8n)
+5. **Technique** — Express/TS + React/TS, Postgres + Mongo logs, CLI, n8n×2 (mails Brevo)
 6. **Transverse** — RGPD, EPI, éco (CSS léger + pagination), SEO meta/sitemap
-7. **Suite** — push mobile, OAuth, scoring plus fin
+7. **Suite** — app mobile, scoring plus fin
 
 ## Qui parle
 - Intro + marché

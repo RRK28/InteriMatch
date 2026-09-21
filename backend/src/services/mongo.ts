@@ -11,12 +11,32 @@ const MatchingLogSchema = new mongoose.Schema(
   { collection: 'matching_logs' }
 );
 
+const AutomationEventSchema = new mongoose.Schema(
+  {
+    type: String,
+    payload: Object,
+    deliveredToN8n: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { collection: 'automation_events' }
+);
+
 export const MatchingLog =
   mongoose.models.MatchingLog || mongoose.model('MatchingLog', MatchingLogSchema);
 
+export const AutomationEvent =
+  mongoose.models.AutomationEvent ||
+  mongoose.model('AutomationEvent', AutomationEventSchema);
+
+export function isMongoReady(): boolean {
+  return mongoose.connection.readyState === 1;
+}
+
 export async function connectMongo() {
   const url = process.env.MONGO_URL || 'mongodb://localhost:27017/interimatch';
-  // timeout court sinon ça bloque le boot si docker est down
-  await mongoose.connect(url, { serverSelectionTimeoutMS: 2500 });
+  // timeout court sinon ça bloque le boot si docker/Atlas est down
+  await mongoose.connect(url, {
+    serverSelectionTimeoutMS: 4000,
+  });
   console.log('mongo ok');
 }

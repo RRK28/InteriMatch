@@ -32,7 +32,9 @@ API : http://localhost:4000 — front : http://localhost:5173
 ## Tests
 ```bash
 cd backend && npm test
+cd ../frontend && npm test
 ```
+Coverage backend généré dans `backend/coverage/`.
 
 ## Comptes seed
 - `chantier@btp-lyon.fr` / `password123` (entreprise)
