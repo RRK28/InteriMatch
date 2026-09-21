@@ -11,3 +11,4 @@ Ressources/.env.france-travail
 Ressources/samples/*-raw.json
 data/raw/
 backend/prisma/*.db
+frontend/tsconfig.tsbuildinfo
