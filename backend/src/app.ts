@@ -50,12 +50,22 @@ app.get('/sitemap.xml', (_req, res) => {
 });
 
 // prod : front Vite build servi par Express (une seule URL Render)
-const frontDist = path.join(__dirname, '../../frontend/dist');
-if (fs.existsSync(frontDist)) {
-  app.use(express.static(frontDist, { maxAge: '1h', index: false }));
+// __dirname = backend/dist/src → remonter à la racine du repo
+const frontDist = path.resolve(__dirname, '../../../frontend/dist');
+const frontAlt = path.resolve(process.cwd(), '../frontend/dist');
+const staticDir = fs.existsSync(frontDist) ? frontDist : frontAlt;
+
+if (fs.existsSync(staticDir)) {
+  console.log('front static:', staticDir);
+  app.use(express.static(staticDir, { maxAge: '1h', index: false }));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(frontDist, 'index.html'));
+    res.sendFile(path.join(staticDir, 'index.html'));
+  });
+} else {
+  console.warn('pas de frontend/dist — GET / renverra 404');
+  app.get('/', (_req, res) => {
+    res.status(503).send('Front non buildé. Vérifie scripts/render-build.sh');
   });
 }
 
