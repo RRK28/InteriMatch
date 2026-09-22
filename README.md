@@ -2,6 +2,8 @@
 
 Plateforme d’intérim **BTP** : entreprises ↔ ouvriers, matching simple, tendances France Travail.
 
+**Site en production :** https://interimatch-2q0a.onrender.com
+
 ## Stack
 - frontend : React + TS (Vite)
 - backend : Express + TS
@@ -49,4 +51,5 @@ Coverage backend généré dans `backend/coverage/`.
 Clés FT : `Ressources/.env.france-travail` (pas commit).
 
 ## Déploiement
-Voir [DEPLOY.md](DEPLOY.md) (Render free).
+Prod : https://interimatch-2q0a.onrender.com  
+Détails : [DEPLOY.md](DEPLOY.md) (Render free — cold start ~30–60 s).
