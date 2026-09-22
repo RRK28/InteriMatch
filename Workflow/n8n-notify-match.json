@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const raw = items[0].json;\nconst body = raw.body || raw;\nconst type = body.type || raw.type;\nconst mission = body.mission || '';\nconst score = body.score ?? '';\nlet subject = '';\nlet html = '';\nif (type === 'high_match') {\n  subject = 'Nouveau match > 80% — ' + mission;\n  html = '<p>Bonjour,</p><p>Une mission <strong>' + mission + '</strong> a un match ≥ 80%.</p><p>Connecte-toi sur InteriMatch.</p>';\n} else if (type === 'relance') {\n  subject = 'Relance — mission encore ouverte sur InteriMatch';\n  html = '<p>Bonjour,</p><p>Tu as des missions encore ouvertes : <strong>' + mission + '</strong>.</p><p>Connecte-toi sur InteriMatch.</p>';\n} else {\n  subject = 'Candidature reçue — ' + mission;\n  html = '<p>Bonjour,</p><p>Candidature pour <strong>' + mission + '</strong> enregistrée (score ' + score + '/100).</p>';\n}\nreturn [{ json: { ...body, type, mission, score, subject, html } }];"
+        "jsCode": "const raw = items[0].json;\nconst body = raw.body || raw;\nconst type = body.type || raw.type;\nconst mission = body.mission || '';\nconst score = body.score ?? '';\nconst matches = body.matches || [];\nlet to = body.email || (matches[0] && matches[0].email) || '';\nlet subject = '';\nlet html = '';\nif (type === 'high_match') {\n  subject = 'Nouveau match > 80% — ' + mission;\n  html = '<p>Bonjour,</p><p>Une mission <strong>' + mission + '</strong> a un match ≥ 80%.</p><p>Connecte-toi sur InteriMatch.</p>';\n  if (!to && matches[0]) to = matches[0].email;\n} else if (type === 'relance') {\n  subject = 'Relance — mission encore ouverte sur InteriMatch';\n  html = '<p>Bonjour,</p><p>Tu as des missions encore ouvertes : <strong>' + mission + '</strong>.</p><p>Connecte-toi sur InteriMatch pour les mettre à jour.</p>';\n} else {\n  subject = 'Candidature reçue — ' + mission;\n  html = '<p>Bonjour,</p><p>Candidature pour <strong>' + mission + '</strong> enregistrée (score ' + score + '/100).</p>';\n}\nif (!to) to = 'leglitcher692@gmail.com';\nreturn [{ json: { ...body, type, mission, score, subject, html, to } }];"
       },
       "id": "code1",
       "name": "Normaliser payload",
@@ -82,7 +82,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"{{ $json.subject }}\",\n  \"htmlContent\": \"{{ $json.html }}\"\n}",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"{{ $json.to }}\" }],\n  \"subject\": \"{{ $json.subject }}\",\n  \"htmlContent\": \"{{ $json.html }}\"\n}",
         "options": {}
       },
       "id": "brevo1",
@@ -113,7 +113,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"leglitcher692@gmail.com\" }],\n  \"subject\": \"{{ $json.subject }}\",\n  \"htmlContent\": \"{{ $json.html }}\"\n}",
+        "jsonBody": "={\n  \"sender\": { \"name\": \"InteriMatch\", \"email\": \"leglitcher692@gmail.com\" },\n  \"to\": [{ \"email\": \"{{ $json.to }}\" }],\n  \"subject\": \"{{ $json.subject }}\",\n  \"htmlContent\": \"{{ $json.html }}\"\n}",
         "options": {}
       },
       "id": "brevo2",
