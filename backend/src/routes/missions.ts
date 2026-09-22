@@ -86,7 +86,7 @@ router.post('/relancer-mails', requireAuth, requireRole('ENTREPRISE'), async (re
   }
 
   const titres = missions.map((m) => m.titre).join(', ');
-  await notifyN8n({
+  const result = await notifyN8n({
     type: 'relance',
     email: req.user!.email,
     mission: `${missions.length} mission(s) ouverte(s) — ex. ${missions[0].titre}`,
@@ -98,8 +98,13 @@ router.post('/relancer-mails', requireAuth, requireRole('ENTREPRISE'), async (re
   res.json({
     ok: true,
     count: missions.length,
+    to: req.user!.email,
+    brevo: result.brevo,
+    n8n: result.n8n,
     missions: missions.map((m) => ({ id: m.id, titre: m.titre })),
-    message: `Relance envoyée pour ${missions.length} mission(s) : ${titres}`,
+    message: result.brevo
+      ? `Relance envoyée à ${req.user!.email} (${missions.length} mission(s))`
+      : `Relance enregistrée pour ${req.user!.email} — vérifie BREVO_API_KEY sur le serveur`,
   });
 });
 
