@@ -14,17 +14,37 @@ function daysBetween(a: Date, b: Date) {
   return Math.ceil((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-// listing public = missions ouvertes uniquement (SEO)
+// listing public = missions ouvertes (+ recherche / filtres)
 router.get('/', async (req, res) => {
   const status = (req.query.status as string) || 'OUVERTE';
+  const q = String(req.query.q || '').trim();
+  const metier = String(req.query.metier || '').trim().toLowerCase();
+  const ville = String(req.query.ville || '').trim();
+  const minRem = req.query.minRem ? Number(req.query.minRem) : undefined;
+
+  const where: any = { status: status as any };
+  if (metier) where.metier = metier;
+  if (ville) where.ville = { contains: ville, mode: 'insensitive' };
+  if (minRem !== undefined && !Number.isNaN(minRem)) {
+    where.remuneration = { gte: minRem };
+  }
+  if (q) {
+    where.OR = [
+      { titre: { contains: q, mode: 'insensitive' } },
+      { description: { contains: q, mode: 'insensitive' } },
+      { metier: { contains: q, mode: 'insensitive' } },
+      { competences: { has: q.toLowerCase() } },
+    ];
+  }
+
   const missions = await prisma.mission.findMany({
-    where: { status: status as any },
+    where,
     orderBy: { createdAt: 'desc' },
     include: {
       entreprise: { select: { entreprise: { select: { raisonSociale: true, ville: true } } } },
       _count: { select: { candidatures: true } },
     },
-    take: 50,
+    take: 100,
   });
   res.json(missions);
 });
