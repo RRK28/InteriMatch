@@ -17,7 +17,7 @@ export default function MatchingSchema() {
           <article className="schema-card">
             <h2>Mission</h2>
             <ul>
-              <li>Métier / ROME</li>
+              <li>Métier</li>
               <li>Compétences</li>
               <li>Lieu + CP</li>
               <li>Dates</li>
