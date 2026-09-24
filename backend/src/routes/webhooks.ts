@@ -136,4 +136,83 @@ router.post('/seed-missions', async (req, res) => {
   });
 });
 
+const INTERIMS_DEMO = [
+  { email: 'amine.macon@interimatch.fr', prenom: 'Amine', nom: 'Khelifi', ville: 'Villeurbanne', codePostal: '69100', metiers: ['macon'], competences: ['coffrage', 'béton', 'fondations'], experienceAns: 5, rayonKm: 35 },
+  { email: 'sofia.coffreuse@interimatch.fr', prenom: 'Sofia', nom: 'Benali', ville: 'Lyon', codePostal: '69003', metiers: ['coffreur', 'macon'], competences: ['coffrage', 'banche', 'ferraillage'], experienceAns: 3, rayonKm: 40 },
+  { email: 'julien.elec@interimatch.fr', prenom: 'Julien', nom: 'Moreau', ville: 'Lyon', codePostal: '69007', metiers: ['electricien'], competences: ['courant fort', 'tableau', 'gaine'], experienceAns: 7, rayonKm: 50 },
+  { email: 'nina.peintre@interimatch.fr', prenom: 'Nina', nom: 'Rossi', ville: 'Caluire-et-Cuire', codePostal: '69300', metiers: ['peintre'], competences: ['enduit', 'ponçage', 'peinture'], experienceAns: 2, rayonKm: 25 },
+  { email: 'kevin.charpente@interimatch.fr', prenom: 'Kévin', nom: 'Petit', ville: 'Lyon', codePostal: '69009', metiers: ['charpentier'], competences: ['charpente', 'couverture', 'échafaudage'], experienceAns: 6, rayonKm: 45 },
+  { email: 'yasmine.maconne@interimatch.fr', prenom: 'Yasmine', nom: 'Traoré', ville: 'Bron', codePostal: '69500', metiers: ['macon'], competences: ['carrelage', 'chape', 'étanchéité'], experienceAns: 4, rayonKm: 30 },
+  { email: 'thomas.coffreur@interimatch.fr', prenom: 'Thomas', nom: 'Garcia', ville: 'Vénissieux', codePostal: '69200', metiers: ['coffreur'], competences: ['coffrage', 'béton', 'étayage'], experienceAns: 8, rayonKm: 55 },
+  { email: 'clara.elec@interimatch.fr', prenom: 'Clara', nom: 'Nguyen', ville: 'Lyon', codePostal: '69006', metiers: ['electricien'], competences: ['VDI', 'fibre', 'baie'], experienceAns: 3, rayonKm: 35 },
+  { email: 'mehdi.peintre@interimatch.fr', prenom: 'Mehdi', nom: 'Hadid', ville: 'Lyon', codePostal: '69004', metiers: ['peintre'], competences: ['façade', 'échafaudage', 'enduit'], experienceAns: 5, rayonKm: 40 },
+  { email: 'lucas.macon@interimatch.fr', prenom: 'Lucas', nom: 'Bernard', ville: 'Décines-Charpieu', codePostal: '69150', metiers: ['macon'], competences: ['dallage', 'béton', 'nivellement'], experienceAns: 2, rayonKm: 60 },
+  { email: 'sarah.elec@interimatch.fr', prenom: 'Sarah', nom: 'Dubois', ville: 'Écully', codePostal: '69130', metiers: ['electricien'], competences: ['dépannage', 'éclairage', 'TGBT'], experienceAns: 4, rayonKm: 30 },
+  { email: 'hugo.charpentier@interimatch.fr', prenom: 'Hugo', nom: 'Lefevre', ville: 'Rillieux-la-Pape', codePostal: '69140', metiers: ['charpentier'], competences: ['ossature', 'isolation', 'bardage'], experienceAns: 5, rayonKm: 45 },
+  { email: 'ines.coffreuse@interimatch.fr', prenom: 'Inès', nom: 'Martinez', ville: 'Saint-Priest', codePostal: '69800', metiers: ['coffreur', 'macon'], competences: ['coffrage', 'ferraillage', 'sécurité'], experienceAns: 3, rayonKm: 50 },
+  { email: 'antoine.macon@interimatch.fr', prenom: 'Antoine', nom: 'Roux', ville: 'Tassin-la-Demi-Lune', codePostal: '69160', metiers: ['macon'], competences: ['enduit', 'projection', 'finition'], experienceAns: 6, rayonKm: 35 },
+  { email: 'lea.poly@interimatch.fr', prenom: 'Léa', nom: 'Fontaine', ville: 'Lyon', codePostal: '69008', metiers: ['macon', 'peintre'], competences: ['manutention', 'béton', 'enduit'], experienceAns: 1, rayonKm: 25 },
+  { email: 'omar.elec@interimatch.fr', prenom: 'Omar', nom: 'Diallo', ville: 'Villeurbanne', codePostal: '69100', metiers: ['electricien'], competences: ['armoire', 'automate', 'H0B0'], experienceAns: 9, rayonKm: 70 },
+  { email: 'camille.peintre@interimatch.fr', prenom: 'Camille', nom: 'Blanc', ville: 'Lyon', codePostal: '69001', metiers: ['peintre'], competences: ['décoratif', 'ponçage', 'finition'], experienceAns: 4, rayonKm: 20 },
+  { email: 'nathan.coffreur@interimatch.fr', prenom: 'Nathan', nom: 'Giraud', ville: 'Meyzieu', codePostal: '69330', metiers: ['coffreur'], competences: ['coffrage', 'courbe', 'béton'], experienceAns: 5, rayonKm: 55 },
+  { email: 'aicha.maconne@interimatch.fr', prenom: 'Aïcha', nom: 'Sow', ville: 'Lyon', codePostal: '69005', metiers: ['macon'], competences: ['pierre', 'mortier', 'jointoiement'], experienceAns: 7, rayonKm: 30 },
+  { email: 'paul.charpente@interimatch.fr', prenom: 'Paul', nom: 'Marchand', ville: 'Lyon', codePostal: '69002', metiers: ['charpentier', 'macon'], competences: ['soudure', 'assemblage', 'CACES'], experienceAns: 10, rayonKm: 80 },
+];
+
+/** Seed intérimaires BTP (skip si email déjà présent). */
+router.post('/seed-interimaires', async (req, res) => {
+  if (!assertSecret(req as any)) return res.status(401).json({ error: 'unauthorized' });
+
+  const bcrypt = await import('bcryptjs');
+  const hash = await bcrypt.hash('password123', 10);
+  const created: { email: string; prenom: string; nom: string }[] = [];
+  const skipped: string[] = [];
+
+  const dispoDebut = new Date();
+  dispoDebut.setDate(dispoDebut.getDate() - 7);
+  const dispoFin = new Date();
+  dispoFin.setMonth(dispoFin.getMonth() + 4);
+
+  for (const p of INTERIMS_DEMO) {
+    const exists = await prisma.user.findUnique({ where: { email: p.email } });
+    if (exists) {
+      skipped.push(p.email);
+      continue;
+    }
+    await prisma.user.create({
+      data: {
+        email: p.email,
+        passwordHash: hash,
+        role: 'INTERIMAIRE',
+        consentRgpd: true,
+        consentAt: new Date(),
+        interim: {
+          create: {
+            prenom: p.prenom,
+            nom: p.nom,
+            telephone: `06${String(10000000 + created.length * 111).slice(0, 8)}`,
+            ville: p.ville,
+            codePostal: p.codePostal,
+            rayonKm: p.rayonKm,
+            metiers: p.metiers,
+            competences: p.competences,
+            experienceAns: p.experienceAns,
+            dispoDebut,
+            dispoFin,
+          },
+        },
+      },
+    });
+    created.push({ email: p.email, prenom: p.prenom, nom: p.nom });
+  }
+
+  res.status(201).json({
+    ok: true,
+    created: created.length,
+    skipped: skipped.length,
+    password: 'password123',
+    interimaires: created,
+  });
+});
+
 export default router;
