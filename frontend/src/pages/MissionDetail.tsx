@@ -3,6 +3,21 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
 
+function scoreLabel(score: number) {
+  if (score >= 80) return { text: 'Excellent', cls: 'match-tier--hot' };
+  if (score >= 55) return { text: 'Bon profil', cls: 'match-tier--mid' };
+  return { text: 'À évaluer', cls: 'match-tier--low' };
+}
+
+const DETAIL_LABELS: Record<string, string> = {
+  metier: 'Métier',
+  competences: 'Compétences',
+  zone: 'Zone',
+  dispo: 'Dispo',
+  experience: 'Expérience',
+  epi: 'EPI',
+};
+
 export default function MissionDetail() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -11,6 +26,8 @@ export default function MissionDetail() {
   const [err, setErr] = useState('');
   const [ok, setOk] = useState('');
   const [matches, setMatches] = useState<any[] | null>(null);
+  const [matching, setMatching] = useState(false);
+  const [matchPhase, setMatchPhase] = useState('');
 
   async function load() {
     const data = await api(`/api/missions/${id}`);
@@ -38,11 +55,34 @@ export default function MissionDetail() {
   }
 
   async function loadMatches() {
+    setErr('');
+    setMatching(true);
+    setMatches(null);
+    const phases = [
+      'Analyse du poste…',
+      'Scan des profils…',
+      'Calcul des scores…',
+      'Classement…',
+    ];
+    let i = 0;
+    setMatchPhase(phases[0]);
+    const tick = setInterval(() => {
+      i = Math.min(i + 1, phases.length - 1);
+      setMatchPhase(phases[i]);
+    }, 450);
+
+    const started = Date.now();
     try {
       const data = await api(`/api/matching/mission/${id}`);
+      const wait = Math.max(0, 1600 - (Date.now() - started));
+      await new Promise((r) => setTimeout(r, wait));
       setMatches(data);
     } catch (ex: any) {
       setErr(ex.message);
+    } finally {
+      clearInterval(tick);
+      setMatching(false);
+      setMatchPhase('');
     }
   }
 
@@ -62,6 +102,7 @@ export default function MissionDetail() {
   if (!m) return <p>{err || 'chargement...'}</p>;
 
   const dejaCand = !!m.maCandidature;
+  const isOwner = user?.role === 'ENTREPRISE' && user.id === m.entrepriseId;
 
   return (
     <section>
@@ -71,7 +112,7 @@ export default function MissionDetail() {
           <>
             {' · '}
             <Link to="/dashboard">dashboard</Link>
-            {user.id === m.entrepriseId && m.status !== 'TERMINEE' && m.status !== 'ANNULEE' && (
+            {isOwner && m.status !== 'TERMINEE' && m.status !== 'ANNULEE' && (
               <>
                 {' · '}
                 <Link to={`/missions/${id}/edit`}>modifier</Link>
@@ -136,7 +177,7 @@ export default function MissionDetail() {
         </div>
       )}
 
-      {user?.role === 'ENTREPRISE' && (
+      {isOwner && (
         <>
           <div className="panel">
             <h2>Candidatures reçues ({m.nbCandidatures ?? m.candidatures?.length ?? 0})</h2>
@@ -209,36 +250,96 @@ export default function MissionDetail() {
             {err && <p className="err">{err}</p>}
           </div>
 
-          <div className="panel">
-            <h2>Matching (tous les profils)</h2>
-            <button type="button" className="btn secondary" onClick={loadMatches}>
-              Calculer les profils
-            </button>
-            {matches && (
-              <table className="table" style={{ marginTop: '1rem' }}>
-                <thead>
-                  <tr>
-                    <th>Intérimaire</th>
-                    <th>Score</th>
-                    <th>Détail</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {matches.slice(0, 10).map((r) => (
-                    <tr key={r.interimId}>
-                      <td>
-                        {r.prenom} {r.nom}
-                        <div className="meta">{r.email}</div>
-                      </td>
-                      <td>
-                        <span className="score">{r.score}</span>
-                        <span className="meta"> /100</span>
-                      </td>
-                      <td className="meta">{JSON.stringify(r.details)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="panel match-panel">
+            <div className="match-panel__head">
+              <div>
+                <h2>Matching chantier</h2>
+                <p className="meta">
+                  Compare cette mission aux profils intérimaires : métier, compétences, zone,
+                  disponibilités.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn"
+                onClick={loadMatches}
+                disabled={matching}
+              >
+                {matching ? 'Analyse en cours…' : matches ? 'Relancer le matching' : 'Lancer le matching'}
+              </button>
+            </div>
+
+            {matching && (
+              <div className="match-scan" aria-live="polite" aria-busy="true">
+                <div className="match-radar" aria-hidden="true">
+                  <span className="match-radar__ring" />
+                  <span className="match-radar__ring match-radar__ring--2" />
+                  <span className="match-radar__sweep" />
+                  <span className="match-radar__core" />
+                </div>
+                <p className="match-scan__label">{matchPhase || 'Matching…'}</p>
+              </div>
+            )}
+
+            {!matching && matches && (
+              <div className="match-results">
+                <p className="meta match-results__count">
+                  {matches.length} profil{matches.length > 1 ? 's' : ''} analysé
+                  {matches.length > 1 ? 's' : ''} — top {Math.min(8, matches.length)}
+                </p>
+                <div className="match-grid">
+                  {matches.slice(0, 8).map((r, idx) => {
+                    const tier = scoreLabel(r.score);
+                    const details = r.details || {};
+                    return (
+                      <article
+                        key={r.interimId}
+                        className={`match-card ${tier.cls}`}
+                        style={{ animationDelay: `${idx * 70}ms` }}
+                      >
+                        <div className="match-card__top">
+                          <div
+                            className="match-ring"
+                            style={{ ['--p' as string]: `${Math.min(100, r.score)}` }}
+                          >
+                            <span>{r.score}</span>
+                          </div>
+                          <div>
+                            <span className={`match-tier ${tier.cls}`}>{tier.text}</span>
+                            <h3>
+                              {r.prenom} {r.nom}
+                            </h3>
+                            <p className="meta">{r.email}</p>
+                            {r.metiers?.length > 0 && (
+                              <p className="meta">{r.metiers.join(' · ')}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="match-bars">
+                          {Object.entries(details).map(([k, v]) => {
+                            const max =
+                              k === 'metier' ? 40 : k === 'competences' ? 35 : k === 'zone' ? 15 : 10;
+                            const pct = Math.round((Number(v) / max) * 100);
+                            return (
+                              <div key={k} className="match-bar">
+                                <div className="match-bar__meta">
+                                  <span>{DETAIL_LABELS[k] || k}</span>
+                                  <span>
+                                    {String(v)}/{max}
+                                  </span>
+                                </div>
+                                <div className="match-bar__track">
+                                  <i style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
         </>

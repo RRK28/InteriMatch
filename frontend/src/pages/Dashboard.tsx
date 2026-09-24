@@ -10,23 +10,10 @@ export default function Dashboard() {
   const [err, setErr] = useState('');
   const [okMsg, setOkMsg] = useState('');
   const [relanceLoading, setRelanceLoading] = useState(false);
-  const [tech, setTech] = useState<{ logs: any[]; events: any[]; mongoOk: boolean } | null>(null);
 
   async function refresh() {
     const missions = await api('/api/missions/mine');
     setData(missions);
-  }
-
-  async function refreshTech() {
-    const [logs, autos] = await Promise.all([
-      api('/api/matching/logs').catch(() => ({ logs: [], error: true })),
-      api('/api/matching/automations').catch(() => ({ events: [], error: true })),
-    ]);
-    setTech({
-      logs: logs.logs || [],
-      events: autos.events || [],
-      mongoOk: !logs.error,
-    });
   }
 
   useEffect(() => {
@@ -34,9 +21,6 @@ export default function Dashboard() {
     refresh().catch(console.error);
     if (user.role === 'INTERIMAIRE') {
       api('/api/matching/for-me').then(setMatches).catch(console.error);
-    }
-    if (user.role === 'ENTREPRISE') {
-      refreshTech().catch(console.error);
     }
   }, [user]);
 
@@ -71,7 +55,6 @@ export default function Dashboard() {
     try {
       const r = await api('/api/missions/relancer-mails', { method: 'POST', body: '{}' });
       setOkMsg(r.message || 'Relance envoyée');
-      await refreshTech();
     } catch (e: any) {
       setErr(e.message);
     } finally {
@@ -102,9 +85,6 @@ export default function Dashboard() {
             >
               {relanceLoading ? 'Envoi…' : 'Relancer par mail (missions ouvertes)'}
             </button>
-            <Link className="btn ghost" to="/matching">
-              Schéma matching
-            </Link>
           </div>
 
           <div className="grid">
@@ -200,31 +180,11 @@ export default function Dashboard() {
               </article>
             ))}
           </div>
-
-          {tech && (
-            <div style={{ marginTop: '2.5rem' }}>
-              <h2>Logs techniques (Mongo / n8n)</h2>
-              <p className="meta">
-                Mongo {tech.mongoOk ? 'connecté' : 'indisponible'} · {tech.logs.length} matching log(s) ·{' '}
-                {tech.events.length} événement(s) automation
-              </p>
-              {tech.events.slice(0, 5).map((e) => (
-                <p key={e._id} className="meta">
-                  [{e.type}] {e.payload?.mission || '—'} · n8n={e.deliveredToN8n ? 'oui' : 'archive seule'}
-                </p>
-              ))}
-            </div>
-          )}
         </>
       )}
 
       {user.role === 'INTERIMAIRE' && (
         <>
-          <p>
-            <Link className="btn ghost" to="/matching">
-              Schéma matching
-            </Link>
-          </p>
           <h2>Missions qui matchent</h2>
           <div className="grid">
             {matches.slice(0, 8).map((row) => (

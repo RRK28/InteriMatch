@@ -35,7 +35,7 @@ export default function Login() {
       </div>
       <div className="auth-card">
         <h1>Connexion</h1>
-        <p className="meta">Compte démo : chantier@btp-lyon.fr / password123</p>
+        <p className="meta">Entreprises et intérimaires BTP — espace sécurisé.</p>
         <OAuthErrorBanner />
         <OAuthButtons />
         <div className="auth-sep">
